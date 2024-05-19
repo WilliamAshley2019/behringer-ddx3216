@@ -170,3 +170,74 @@ def initialize_ddx3216_integration():
 
 # Execute the initialization
 initialize_ddx3216_integration()            
+import midi
+import device
+import mixer
+
+# MIDI codes
+MIDI_NOTEON = 0x90
+MIDI_NOTEOFF = 0x80
+MIDI_CONTROLCHANGE = 0xB0
+MIDI_PITCHBEND = 0xE0
+
+# FL Studio Mixer controls
+MIXER_TRACK_COUNT = 125  # Total number of mixer tracks including master
+
+# Mapping CC numbers to mixer controls
+CC_VOLUME = 7
+CC_PAN = 10
+CC_MUTE = 8  # Custom CC number for mute, need to configure on your controller
+
+def OnMidiMsg(event):
+    # Check if the event is a Control Change message
+    if event.status == MIDI_CONTROLCHANGE:
+        track_index = event.data1 - 1  # Adjusting to 0-based index
+        control_value = event.data2
+
+        # Handle volume control
+        if event.data1 in range(1, MIXER_TRACK_COUNT + 1):
+            mixer.setTrackVolume(track_index, control_value / 127.0)
+
+        # Handle pan control
+        elif event.data1 in range(CC_PAN, CC_PAN + MIXER_TRACK_COUNT):
+            mixer.setTrackPan(track_index, (control_value - 64) / 64.0)
+
+        # Handle mute control
+        elif event.data1 in range(CC_MUTE, CC_MUTE + MIXER_TRACK_COUNT):
+            mixer.enableTrack(track_index, control_value < 64)
+
+    # Check if the event is a Pitch Bend message
+    elif event.status == MIDI_PITCHBEND:
+        track_index = event.data1 - 1
+        pitch_value = (event.data2 << 7) + event.data3 - 8192
+        mixer.setTrackPitch(track_index, pitch_value / 8192.0)
+
+def OnInit():
+    # Initialize the controller
+    device.setHasMeters()
+    device.midiOutMsg(MIDI_CONTROLCHANGE + (device.FPT_Play << 8) + (127 << 16))
+
+def OnDeInit():
+    # Deinitialize the controller
+    pass
+
+def OnRefresh(flags):
+    # Refresh the controller state
+    if flags & PME_LiveInput:
+        device.midiOutMsg(MIDI_CONTROLCHANGE + (device.FPT_Play << 8) + (127 << 16))
+
+def OnUpdateBeatIndicator(value):
+    # Update the beat indicator
+    device.midiOutMsg(MIDI_NOTEON + (value << 8) + (127 << 16))
+
+def OnProcessMIDI(event):
+    # Process MIDI events
+    OnMidiMsg(event)
+
+def OnMidiIn(event):
+    # Handle incoming MIDI messages
+    OnProcessMIDI(event)
+
+def OnMidiOut(event):
+    # Handle outgoing MIDI messages
+    device.midiOutMsg(event.status + (event.data1 << 8) + (event.data2 << 16))

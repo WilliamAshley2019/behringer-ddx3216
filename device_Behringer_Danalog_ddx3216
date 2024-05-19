@@ -105,3 +105,68 @@ def setup_mixer():
 
 # Execute setup
 setup_mixer()
+
+import mido  # Make sure to install the 'mido' library for MIDI communication
+
+# Define MIDI output (this will be your DDX3216 or MIDI interface)
+midi_output = mido.open_output('DDX3216 MIDI Out')
+
+# Define MIDI functions for transport controls
+def send_midi_message(control, value):
+    msg = mido.Message('control_change', control=control, value=value)
+    midi_output.send(msg)
+
+def play(is_pressed=True):
+    send_midi_message(FPT_Play, 127 if is_pressed else 0)
+
+def stop(is_pressed=True):
+    send_midi_message(FPT_Stop, 127 if is_pressed else 0)
+
+def record(is_pressed=True):
+    send_midi_message(FPT_Record, 127 if is_pressed else 0)
+
+def rewind(is_pressed=True):
+    send_midi_message(FPT_Rewind, 127 if is_pressed else 0)
+
+def fast_forward(is_pressed=True):
+    send_midi_message(FPT_FastForward, 127 if is_pressed else 0)
+
+def loop(is_pressed=True):
+    send_midi_message(FPT_Loop, 127 if is_pressed else 0)
+
+def add_marker(is_pressed=True):
+    send_midi_message(FPT_AddMarker, 127 if is_pressed else 0)
+
+def jog(offset):
+    send_midi_message(FPT_Jog, offset)
+
+def marker_jump(offset):
+    send_midi_message(FPT_MarkerJumpJog, offset)
+
+# Additional functions can be mapped similarly
+
+# Example function to map DDX3216 channel faders to DAW mixer tracks
+def map_channel_fader(channel, value):
+    control = FPT_ChannelJog + channel  # This is an example; adjust based on actual MIDI mappings
+    send_midi_message(control, value)
+
+# Main function to initialize the script
+def initialize_ddx3216_integration():
+    # Set initial states or configurations if needed
+    print("Initializing DDX3216 MIDI integration")
+
+    # Example: Play/Stop control
+    play()
+    stop()
+
+    # Example: Jog control
+    jog(64)  # Center position for jog wheel
+
+    # Example: Add a marker
+    add_marker()
+
+    # Example: Control a channel fader
+    map_channel_fader(1, 100)  # Channel 1, value 100
+
+# Execute the initialization
+initialize_ddx3216_integration()            

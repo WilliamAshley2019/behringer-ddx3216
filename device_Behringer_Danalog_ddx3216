@@ -1,0 +1,60 @@
+import device
+import mixer
+import midi
+
+# Constants
+NUM_CHANNELS = 32
+MIDI_CHANNEL = 0  # Adjust based on your setup
+MIDI_PORT = 32  # Set the MIDI port to 32
+
+# Function to handle incoming MIDI messages
+def OnMidiMsg(event):
+    if event.port == MIDI_PORT:  # Ensure we're only processing messages from port 32
+        channel = None
+
+        # Map faders
+        if midi.MIDI_CONTROLCHANGE <= event.midiId <= midi.MIDI_CONTROLCHANGE + NUM_CHANNELS:
+            channel = event.data1 - 1  # Faders start from CC 1
+            if 0 <= channel < NUM_CHANNELS:
+                value = event.data2
+                mixer.setTrackVolume(channel, value / 127.0)
+
+        # Map pan controls
+        elif 64 <= event.data1 <= 95:
+            channel = event.data1 - 64  # Pan starts from CC 64
+            if 0 <= channel < NUM_CHANNELS:
+                value = event.data2
+                mixer.setTrackPan(channel, (value - 64) / 63.0)
+
+        # Handle Mute buttons
+        elif event.midiId == midi.MIDI_NOTEON:
+            if 104 <= event.data1 <= 105:  # Mute ON/OFF for channels 1-61
+                mute_channel = event.data2 - 1  # Channel number from the data2 field
+                if 0 <= mute_channel < NUM_CHANNELS:
+                    if event.data1 == 104:
+                        mixer.setTrackMute(mute_channel, True)
+                    elif event.data1 == 105:
+                        mixer.setTrackMute(mute_channel, False)
+
+        # Log unhandled messages for debugging
+        else:
+            print(f"Unhandled MIDI message: {event.midiId}, {event.data1}, {event.data2}")
+
+# Function to update MIDI controller when FL Studio state changes
+def OnRefresh(flags):
+    for i in range(NUM_CHANNELS):
+        # Update fader positions
+        volume = int(mixer.getTrackVolume(i) * 127)
+        device.midiOutMsg(midi.MIDI_CONTROLCHANGE + MIDI_CHANNEL, 1 + i, volume)
+
+        # Update pan positions
+        pan = int((mixer.getTrackPan(i) * 63) + 64)
+        device.midiOutMsg(midi.MIDI_CONTROLCHANGE + MIDI_CHANNEL, 64 + i, pan)
+
+# Called when the script starts or when FL Studio reloads the script
+def OnInit():
+    OnRefresh(None)
+
+# Called when the script is terminated or FL Studio closes
+def OnDeInit():
+    pass

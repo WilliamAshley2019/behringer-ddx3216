@@ -1,0 +1,132 @@
+# name=Behringer DDX3216 DAW Integration
+
+import fl
+import mixer
+import midi
+import device
+import time
+import threading
+import json
+import sys
+
+# Constants specific to DDX3216
+NUM_CHANNELS = 32
+MIDI_CHANNEL = 0  # Adjust based on your setup
+MIDI_PORT = 32  # Set the MIDI port to 32
+
+# MIDI codes
+MIDI_NOTEON = 0x90
+MIDI_NOTEOFF = 0x80
+MIDI_CONTROLCHANGE = 0xB0
+
+# FL Studio Mixer controls
+MIXER_TRACK_COUNT = 125  # Total number of mixer tracks including master
+
+# Function to handle incoming MIDI messages
+def OnMidiMsg(event):
+    if event.port == MIDI_PORT:  # Ensure we're only processing messages from the correct MIDI port
+        channel = None
+
+        # Map faders
+        if midi.MIDI_CONTROLCHANGE <= event.midiId <= midi.MIDI_CONTROLCHANGE + NUM_CHANNELS:
+            channel = event.data1 - 1  # Faders start from CC 1
+            if 0 <= channel < NUM_CHANNELS:
+                value = event.data2
+                mixer.setTrackVolume(channel, value / 127.0)
+
+        # Map pan controls
+        elif 64 <= event.data1 <= 95:
+            channel = event.data1 - 64  # Pan starts from CC 64
+            if 0 <= channel < NUM_CHANNELS:
+                value = event.data2
+                mixer.setTrackPan(channel, (value - 64) / 63.0)
+
+        # Handle Mute buttons
+        elif event.midiId == midi.MIDI_NOTEON:
+            if 104 <= event.data1 <= 105:  # Mute ON/OFF for channels 1-32
+                mute_channel = event.data1 - 104  # Channel number from the data1 field
+                if 0 <= mute_channel < NUM_CHANNELS:
+                    if event.data1 == 104:
+                        mixer.setTrackMute(mute_channel, True)
+                    elif event.data1 == 105:
+                        mixer.setTrackMute(mute_channel, False)
+
+        # Log unhandled messages for debugging
+        else:
+            print(f"Unhandled MIDI message: {event.midiId}, {event.data1}, {event.data2}")
+
+# Function to update MIDI controller when FL Studio state changes
+def OnRefresh(flags):
+    for i in range(NUM_CHANNELS):
+        # Update fader positions
+        volume = int(mixer.getTrackVolume(i) * 127)
+        device.midiOutMsg(midi.MIDI_CONTROLCHANGE + MIDI_CHANNEL, 1 + i, volume)
+
+        # Update pan positions
+        pan = int((mixer.getTrackPan(i) * 63) + 64)
+        device.midiOutMsg(midi.MIDI_CONTROLCHANGE + MIDI_CHANNEL, 64 + i, pan)
+
+# Called when the script starts or when FL Studio reloads the script
+def OnInit():
+    OnRefresh(None)
+
+# Called when the script is terminated or FL Studio closes
+def OnDeInit():
+    pass
+
+# Example function to map DDX3216 channel faders to DAW mixer tracks
+def map_channel_fader(channel, value):
+    control = FPT_ChannelJog + channel  # Adjust based on actual MIDI mappings
+    send_midi_message(control, value)
+
+# Function to send MIDI messages for transport controls
+def send_midi_message(control, value):
+    msg = mido.Message('control_change', control=control, value=value)
+    midi_output.send(msg)
+
+def play(is_pressed=True):
+    send_midi_message(FPT_Play, 127 if is_pressed else 0)
+
+def stop(is_pressed=True):
+    send_midi_message(FPT_Stop, 127 if is_pressed else 0)
+
+def record(is_pressed=True):
+    send_midi_message(FPT_Record, 127 if is_pressed else 0)
+
+def rewind(is_pressed=True):
+    send_midi_message(FPT_Rewind, 127 if is_pressed else 0)
+
+def fast_forward(is_pressed=True):
+    send_midi_message(FPT_FastForward, 127 if is_pressed else 0)
+
+def loop(is_pressed=True):
+    send_midi_message(FPT_Loop, 127 if is_pressed else 0)
+
+def add_marker(is_pressed=True):
+    send_midi_message(FPT_AddMarker, 127 if is_pressed else 0)
+
+def jog(offset):
+    send_midi_message(FPT_Jog, offset)
+
+def marker_jump(offset):
+    send_midi_message(FPT_MarkerJumpJog, offset)
+
+# Function to initialize the integration
+def initialize_ddx3216_integration():
+    print("Initializing DDX3216 MIDI integration")
+
+    # Example: Play/Stop control
+    play()
+    stop()
+
+    # Example: Jog control
+    jog(64)  # Center position for jog wheel
+
+    # Example: Add a marker
+    add_marker()
+
+    # Example: Control a channel fader
+    map_channel_fader(1, 100)  # Channel 1, value 100
+
+# Execute the initialization
+initialize_ddx3216_integration()

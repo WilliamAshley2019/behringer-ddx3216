@@ -1,0 +1,4 @@
+I thought should anyone try to get the rs232 port working and is new to  serial ports this information would be useful. 1. You can buy Rs232 to usb adapters as serial
+ports may not be as common but USB ports will likely remain supported for the foreseeable future in some form or another.
+
+If you are using the prolific ser! there are various versions of the driver for the rs232 to usb adapter.   Some of these drivers may no longer be available as pages have disappeared from the internet. I am using a version gotten from a chinese website likely for a chip in the adapter which is a wch chip.  https://www.wch-ic.com/downloads/CH341SER_EXE.html         This worked for for windows 11.   There is software specifically for behringer also for the rs232 to change firmware etc. Thi sis an alternative to using the PMCIA card slot on the ddx3216 for firm ware. But the RS232 may have other uses.

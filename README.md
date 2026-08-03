@@ -1,3 +1,5 @@
+None of this is confirmed it is still at an analysis level. As the firmware code is being analyzed to determine what steps can be taken to gain access to the system such as by inplementing a standard computer like i/o system that allows dynamic interface.
+
 ```
 Documentation
 CPUIC19_PROM.BIN (64KB) — this is the boot ROM (matches the M27C512 EPROM footprint exactly). It opens with genuine, sane 8086/386 real-mode boot code:

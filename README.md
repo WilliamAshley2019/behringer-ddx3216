@@ -11,7 +11,7 @@ B0 08       MOV AL, 0x08
 EE          OUT DX, AL
 ...         ; more OUT instructions to ports 0x22/0x23 — classic 8259 PIC init
 
-Confirms the Am386SC300 datasheet you already had in the repo is the right reference, and a standard x86 real-mode disassembler (Ghidra with the x86-16 processor module, or IDA) will chew through this cleanly. This chip is your anchor: find its interrupt vector table and jump targets and you'll know exactly where in the four flash chips execution continues.
+Confirms the Am386SC300 datasheet is the right reference, and a standard x86 real-mode disassembler (Ghidra with the x86-16 processor module, or IDA) will chew through this cleanly. This chip is your anchor: find its interrupt vector table and jump targets and you'll know exactly where in the four flash chips execution continues.
 
 The four *_FLASH.BIN files (512KB each — matches the AT29C040A/4Mbit chips) are data-rich, not just code. Pulling every embedded string out of them, I found the firmware's own POST/self-test diagnostic banners, using an old embedded-systems space-saving trick: dropping vowels. E.g. GNRLERR!! decodes cleanly as GENERAL ERR!!, and the strings clearly reference things like DSP load tests (DP1234), RAM test, flash test, CRC test, "COMMUNICATIONS ERROR", RS-232/serial port test, and MIDI/SysEx-adjacent test banners — i.e. this really is the console's operating firmware, and its self-test code alone tells you a lot about the internal architecture (multiple DSPs, a comms/serial self-test stage, flash-integrity checks) before you've disassembled a single instruction.
 

@@ -1,3 +1,4 @@
+```
 Documentation
 CPUIC19_PROM.BIN (64KB) — this is the boot ROM (matches the M27C512 EPROM footprint exactly). It opens with genuine, sane 8086/386 real-mode boot code:
 
@@ -10,7 +11,7 @@ BA 1E 02    MOV DX, 0x021E
 B0 08       MOV AL, 0x08
 EE          OUT DX, AL
 ...         ; more OUT instructions to ports 0x22/0x23 — classic 8259 PIC init
-
+```
 Confirms the Am386SC300 datasheet is the right reference, and a standard x86 real-mode disassembler (Ghidra with the x86-16 processor module, or IDA) will chew through this cleanly. This chip is your anchor: find its interrupt vector table and jump targets and you'll know exactly where in the four flash chips execution continues.
 
 The four *_FLASH.BIN files (512KB each — matches the AT29C040A/4Mbit chips) are data-rich, not just code. Pulling every embedded string out of them, I found the firmware's own POST/self-test diagnostic banners, using an old embedded-systems space-saving trick: dropping vowels. E.g. GNRLERR!! decodes cleanly as GENERAL ERR!!, and the strings clearly reference things like DSP load tests (DP1234), RAM test, flash test, CRC test, "COMMUNICATIONS ERROR", RS-232/serial port test, and MIDI/SysEx-adjacent test banners — i.e. this really is the console's operating firmware, and its self-test code alone tells you a lot about the internal architecture (multiple DSPs, a comms/serial self-test stage, flash-integrity checks) before you've disassembled a single instruction.
@@ -42,7 +43,7 @@ ADSP-2183 DSPs (I see "21823" in your list - likely ADSP-2183)
 AT29C040A flash (4Mbit = 512KB)
 
 74HC139 address decoders
-
+```
 Decoded Strings - Complete Translation
 1. POST/Diagnostic Strings (CPUIC15)
 Original (Vowel-Removed)	Decoded Meaning	Context
@@ -138,7 +139,7 @@ Boot ROM (CPUIC19) →
                     Front panel display (CPUIC16/18 label tables) →
                         Main mixing engine
 The numbered sequence (1,2,4,5,6,7,8,9,0) is a classic POST progress indicator - probably shown on the LCD display as the mixer boots.
-
+```
 
 
 V9938 Video Display Processor Register Writes (Records 1-46)
@@ -151,7 +152,7 @@ The mixer has a graphical LCD display (320x240 or similar)
 V9938 was commonly used in embedded industrial displays circa 2001
 
 The pattern 88 30 00 00 00 84 70 F0 00 02 82 E0 F0 83 12 80 80 is VDP register init:
-
+```
 Byte Pair	Meaning
 88 30	Write 0x30 to V9938 Register 8 (Sprite/Pattern name table base)
 84 70	Write 0x70 to Register 4 (Color table base)
@@ -168,11 +169,11 @@ D5	PUSH DE	Save DE register
 95	SUB L	Subtract L from A
 C9	RET	Return from subroutine
 This is sound chip initialization code for the YM2610 / YM2610B or ADPCM-A/ADPCM-B sections!
-
+```
 DDX3216 Architecture Confirmed
 Based on all this, the DDX3216's internal architecture is:
 
-text
+```
 ┌─────────────────────────────────────────────┐
 │           Am386SC300 (x86 CPU)              │
 │  ┌───────────────────────────────────────┐  │
@@ -226,33 +227,34 @@ text
 │  - 4-channel FM synthesis                  │
 │  - Used for click/beep sounds?             │
 └─────────────────────────────────────────────┘
+```
 The 129-Byte Record Structure Explained
 Each 129-byte record is likely a VDP command block:
 
-text
+```
 Record Template (129 bytes):
 Offset 0:   88 (V9938 register write command to reg 8)
 Offset 1:   3E (data for reg 8)
 Offset 2:   0E (next command?)
 Offset 3:   1C (data)
 ... etc.
-
+```
 Each record = 1 VDP frame/page of display data
 129 bytes = 0x81 = probably the length of 1 display line or tile row
 The records at 0x153B, 0x15BC, 0x163D, 0x16BE are VDP tilemap/pattern data being written to VRAM, not code!
 
 Z80 Code Analysis
 The Z80 code at the end of CPUIC17 is likely sound driver code:
-
+```
 Hex	Opcode	What it's doing
 D5 00 11 10 80	PUSH DE / NOP / LD DE, 0x8010	Set up YM2610 address port
 95 00 11 10 80	SUB L / NOP / LD DE, 0x8010	More sound register setup
 C9 00 04 01 04 02	RET / NOP / INC B / LD BC, 0x0204	Subroutine return (maybe interrupt handler)
 The 0x8010 address is significant - this is likely the YM2610 ADPCM-B control port or VDP VRAM address!
-
+```
 German Firmware Strings (Decoded)
 Based on 2001 Behringer/German engineering, here are the real meanings:
-
+```
 Original	Decoded	German → English
 ODPORM	"ODPORM"	"OD PORM" = "Output Port Memory"
 DPCMUIAIN	"DPCMUIA IN"	"DSP Communication Unit A In"
@@ -262,6 +264,7 @@ LNITRA ETO	"LNITRA ETO"	"Unitra ETO" = "Unitra ETO" (maybe "UNITRA" brand parts)
 GNRLERR	"GENERAL ERR"	"General Error"
 SICOF	"SICOF"	"SICOF" = Siemens Codec Filter (used in ISDN/telecom)
 ALIE	"ALIE"	"ALIE" = "Aliasing"  
+```
 Mido - MIDI Objects for Python
 MIT License
 

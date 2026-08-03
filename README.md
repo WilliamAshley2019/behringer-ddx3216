@@ -19,7 +19,7 @@ CPUIC16/CPUIC18 look different — shorter, fixed-width ~7-character padded fiel
 
 I turned the extraction + entropy + de-vowel-heuristic logic into a reusable script so you (and I, next session) can point it at v109.bex/v112.bex
 THIS IS A WORKING FOLDER NOT INTENDED FOR PUBLIC USE - USE AT YOUR OWN RISK. THIS IS UNTESTED.
-
+(Ghidra, x86-16 real mode)
 BELOW IS ANY LINKED FILES AND PROJECTS THAT ARE POTENTIALLY LINKED TO GETTING THE SCRIPT WORKING
 
 

@@ -40,7 +40,7 @@ These four 512KB chips make up 2MB of main firmware. The DDX3216 has:
 
 Am386SC300 (386 core with integrated peripherals)
 
-ADSP-2183 DSPs (I see "21823" in your list - likely ADSP-2183)
+ADSP-2183 DSPs "21823" DSP-2183)
 
 AT29C040A flash (4Mbit = 512KB)
 

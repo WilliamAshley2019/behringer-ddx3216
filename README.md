@@ -162,7 +162,7 @@ Byte Pair	Meaning
 83 12	Write 0x12 to Register 3 (Color generator table base)
 80 80	Write 0x80 to Register 0 (Mode control - graphics mode)
 2. Z80 Code (The "d5 00 11 10 80" pattern)
-You're right again - these are Z80 instructions:
+ These are Z80 instructions:
 
 Hex	Z80 Opcode	Meaning
 D5	PUSH DE	Save DE register

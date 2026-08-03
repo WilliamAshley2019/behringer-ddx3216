@@ -145,7 +145,7 @@ The numbered sequence (1,2,4,5,6,7,8,9,0) is a classic POST progress indicator -
 
 
 V9938 Video Display Processor Register Writes (Records 1-46)
-You're absolutely right about the 88, 84, 82, 81, 80 pattern - this is V9938 (MSX2 VDP) register initialization, not 68000/386 code!
+ t the 88, 84, 82, 81, 80 pattern - this is V9938 (MSX2 VDP) register initialization, not 68000/386 code!
 
 For the DDX3216, this makes perfect sense because:
 

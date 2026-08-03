@@ -1,3 +1,23 @@
+Documentation
+CPUIC19_PROM.BIN (64KB) — this is the boot ROM (matches the M27C512 EPROM footprint exactly). It opens with genuine, sane 8086/386 real-mode boot code:
+
+FA          CLI                  ; disable interrupts
+B8 00 FF    MOV AX, 0xFF00
+8E D8       MOV DS, AX
+B8 F0 00    MOV AX, 0x00F0
+8E D0       MOV SS, AX
+BA 1E 02    MOV DX, 0x021E
+B0 08       MOV AL, 0x08
+EE          OUT DX, AL
+...         ; more OUT instructions to ports 0x22/0x23 — classic 8259 PIC init
+
+Confirms the Am386SC300 datasheet you already had in the repo is the right reference, and a standard x86 real-mode disassembler (Ghidra with the x86-16 processor module, or IDA) will chew through this cleanly. This chip is your anchor: find its interrupt vector table and jump targets and you'll know exactly where in the four flash chips execution continues.
+
+The four *_FLASH.BIN files (512KB each — matches the AT29C040A/4Mbit chips) are data-rich, not just code. Pulling every embedded string out of them, I found the firmware's own POST/self-test diagnostic banners, using an old embedded-systems space-saving trick: dropping vowels. E.g. GNRLERR!! decodes cleanly as GENERAL ERR!!, and the strings clearly reference things like DSP load tests (DP1234), RAM test, flash test, CRC test, "COMMUNICATIONS ERROR", RS-232/serial port test, and MIDI/SysEx-adjacent test banners — i.e. this really is the console's operating firmware, and its self-test code alone tells you a lot about the internal architecture (multiple DSPs, a comms/serial self-test stage, flash-integrity checks) before you've disassembled a single instruction.
+
+CPUIC16/CPUIC18 look different — shorter, fixed-width ~7-character padded fields (TRODLY , TROCOU , NACR   , etc.) rather than sentences. My best guess without the schematic in front of me: these are front-panel display label tables (parameter names truncated to fit whatever character display sits above each channel strip), same vowel-dropping style. Worth checking against CPU01_Rev_H.pdf to see if that display width lines up.
+
+I turned the extraction + entropy + de-vowel-heuristic logic into a reusable script so you (and I, next session) can point it at v109.bex/v112.bex
 THIS IS A WORKING FOLDER NOT INTENDED FOR PUBLIC USE - USE AT YOUR OWN RISK. THIS IS UNTESTED.
 
 BELOW IS ANY LINKED FILES AND PROJECTS THAT ARE POTENTIALLY LINKED TO GETTING THE SCRIPT WORKING

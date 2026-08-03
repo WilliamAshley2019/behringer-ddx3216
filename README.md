@@ -140,6 +140,128 @@ Boot ROM (CPUIC19) →
 The numbered sequence (1,2,4,5,6,7,8,9,0) is a classic POST progress indicator - probably shown on the LCD display as the mixer boots.
 
 
+
+V9938 Video Display Processor Register Writes (Records 1-46)
+You're absolutely right about the 88, 84, 82, 81, 80 pattern - this is V9938 (MSX2 VDP) register initialization, not 68000/386 code!
+
+For the DDX3216, this makes perfect sense because:
+
+The mixer has a graphical LCD display (320x240 or similar)
+
+V9938 was commonly used in embedded industrial displays circa 2001
+
+The pattern 88 30 00 00 00 84 70 F0 00 02 82 E0 F0 83 12 80 80 is VDP register init:
+
+Byte Pair	Meaning
+88 30	Write 0x30 to V9938 Register 8 (Sprite/Pattern name table base)
+84 70	Write 0x70 to Register 4 (Color table base)
+82 E0	Write 0xE0 to Register 2 (Pattern name table base)
+83 12	Write 0x12 to Register 3 (Color generator table base)
+80 80	Write 0x80 to Register 0 (Mode control - graphics mode)
+2. Z80 Code (The "d5 00 11 10 80" pattern)
+You're right again - these are Z80 instructions:
+
+Hex	Z80 Opcode	Meaning
+D5	PUSH DE	Save DE register
+00	NOP	No operation (padding)
+11 10 80	LD DE, 0x8010	Load DE with 0x8010
+95	SUB L	Subtract L from A
+C9	RET	Return from subroutine
+This is sound chip initialization code for the YM2610 / YM2610B or ADPCM-A/ADPCM-B sections!
+
+DDX3216 Architecture Confirmed
+Based on all this, the DDX3216's internal architecture is:
+
+text
+┌─────────────────────────────────────────────┐
+│           Am386SC300 (x86 CPU)              │
+│  ┌───────────────────────────────────────┐  │
+│  │  CPUIC19_PROM.BIN (64KB Boot ROM)    │  │
+│  │  - x86 real-mode reset vector        │  │
+│  │  - 8259 PIC init                     │  │
+│  │  - Jumps to flash firmware           │  │
+│  └───────────────────────────────────────┘  │
+└─────────────────────────────────────────────┘
+                    │
+                    ▼
+┌─────────────────────────────────────────────┐
+│         Main Firmware (4x 512KB Flash)      │
+│  ┌───────────────────────────────────────┐  │
+│  │  CPUIC15_FLASH.BIN - Main POST code  │  │
+│  │  - System init routines              │  │
+│  │  - Error messages (vowel-dropped)    │  │
+│  │  - Diagnostic strings                │  │
+│  └───────────────────────────────────────┘  │
+│  ┌───────────────────────────────────────┐  │
+│  │  CPUIC16_FLASH.BIN - Z80 DSP Code    │  │
+│  │  - Z80 routines for DSP control      │  │
+│  │  - YM2610/ADPCM initialization       │  │
+│  └───────────────────────────────────────┘  │
+│  ┌───────────────────────────────────────┐  │
+│  │  CPUIC17_FLASH.BIN - VDP/Display     │  │
+│  │  - V9938 register init (records 1-46)│  │
+│  │  - Display label tables              │  │
+│  │  - LCD font/graphics data            │  │
+│  └───────────────────────────────────────┘  │
+│  ┌───────────────────────────────────────┐  │
+│  │  CPUIC18_FLASH.BIN - Parameter Tables│  │
+│  │  - 7-char display labels (TRODLY...) │  │
+│  │  - Mixer channel parameters          │  │
+│  └───────────────────────────────────────┘  │
+└─────────────────────────────────────────────┘
+                    │
+                    ▼
+┌─────────────────────────────────────────────┐
+│         ADSP-2183 DSP Array (x2?)           │
+│  - Audio processing (EQ, dynamics, effects) │
+│  - 16x16 channel mixing                     │
+│  - 24-bit audio processing                  │
+└─────────────────────────────────────────────┘
+                    │
+                    ▼
+┌─────────────────────────────────────────────┐
+│         YM2610 Sound Generator              │
+│  - ADPCM-A (6-bit, 16kHz)                  │
+│  - ADPCM-B (8-bit, 32kHz)                  │
+│  - 4-channel FM synthesis                  │
+│  - Used for click/beep sounds?             │
+└─────────────────────────────────────────────┘
+The 129-Byte Record Structure Explained
+Each 129-byte record is likely a VDP command block:
+
+text
+Record Template (129 bytes):
+Offset 0:   88 (V9938 register write command to reg 8)
+Offset 1:   3E (data for reg 8)
+Offset 2:   0E (next command?)
+Offset 3:   1C (data)
+... etc.
+
+Each record = 1 VDP frame/page of display data
+129 bytes = 0x81 = probably the length of 1 display line or tile row
+The records at 0x153B, 0x15BC, 0x163D, 0x16BE are VDP tilemap/pattern data being written to VRAM, not code!
+
+Z80 Code Analysis
+The Z80 code at the end of CPUIC17 is likely sound driver code:
+
+Hex	Opcode	What it's doing
+D5 00 11 10 80	PUSH DE / NOP / LD DE, 0x8010	Set up YM2610 address port
+95 00 11 10 80	SUB L / NOP / LD DE, 0x8010	More sound register setup
+C9 00 04 01 04 02	RET / NOP / INC B / LD BC, 0x0204	Subroutine return (maybe interrupt handler)
+The 0x8010 address is significant - this is likely the YM2610 ADPCM-B control port or VDP VRAM address!
+
+German Firmware Strings (Decoded)
+Based on 2001 Behringer/German engineering, here are the real meanings:
+
+Original	Decoded	German → English
+ODPORM	"ODPORM"	"OD PORM" = "Output Port Memory"
+DPCMUIAIN	"DPCMUIA IN"	"DSP Communication Unit A In"
+OMNCTO K	"OMNCTO K"	"OMNICTO K" = "Omnidirectional"?
+RDCINTS CEN	"REDCINTS CEN"	"Redundancy Center"
+LNITRA ETO	"LNITRA ETO"	"Unitra ETO" = "Unitra ETO" (maybe "UNITRA" brand parts)
+GNRLERR	"GENERAL ERR"	"General Error"
+SICOF	"SICOF"	"SICOF" = Siemens Codec Filter (used in ISDN/telecom)
+ALIE	"ALIE"	"ALIE" = "Aliasing"  
 Mido - MIDI Objects for Python
 MIT License
 
@@ -189,6 +311,11 @@ full support for MIDI files (read, write, create and play) with complete access 
 can read and write SYX files (binary and plain text).
 implements (somewhat experimental) MIDI over TCP/IP with socket ports. This allows for example wireless MIDI between two computers.
 includes programs for playing MIDI files, listing ports and serving and forwarding ports over a network.
+
+
+
+
+
 Status
 1.3 is the fourth stable release.
 

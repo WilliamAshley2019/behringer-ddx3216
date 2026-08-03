@@ -132,7 +132,7 @@ German Word	English Meaning	Where it might appear
 Architecture Confirmation
 The code structure suggests:
 
-text
+ 
 Boot ROM (CPUIC19) → 
     Initializes 386 (real mode) →
         Loads from Flash (CPUIC15-18) →

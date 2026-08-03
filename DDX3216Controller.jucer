@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="Ddx3216Ctrl001" name="DDX3216Controller" projectType="guiapp"
+              version="0.1.0" bundleIdentifier="music.williamashley.ddx3216controller"
+              displaySplashScreen="0" jucerFormatVersion="1" companyName="William Ashley Music"
+              companyCopyright="William Ashley" companyWebsite="https://williamashley.music"
+              companyEmail="contact@williamashley.music">
+  <MAINGROUP id="MainGroup" name="DDX3216Controller">
+    <GROUP id="SourceGroup" name="Source">
+      <FILE id="f001" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
+      <FILE id="f002" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>
+      <FILE id="f003" name="MainComponent.cpp" compile="1" resource="0" file="Source/MainComponent.cpp"/>
+      <FILE id="f004" name="DDX3216Protocol.h" compile="0" resource="0" file="Source/DDX3216Protocol.h"/>
+      <FILE id="f005" name="DDX3216Protocol.cpp" compile="1" resource="0"
+            file="Source/DDX3216Protocol.cpp"/>
+      <FILE id="f006" name="MixerState.h" compile="0" resource="0" file="Source/MixerState.h"/>
+      <FILE id="f007" name="MidiIOManager.h" compile="0" resource="0" file="Source/MidiIOManager.h"/>
+      <FILE id="f008" name="MidiIOManager.cpp" compile="1" resource="0" file="Source/MidiIOManager.cpp"/>
+      <FILE id="f009" name="ChannelStripComponent.h" compile="0" resource="0"
+            file="Source/ChannelStripComponent.h"/>
+      <FILE id="f010" name="ChannelStripComponent.cpp" compile="1" resource="0"
+            file="Source/ChannelStripComponent.cpp"/>
+    </GROUP>
+  </MAINGROUP>
+  <EXPORTFORMATS>
+    <VS2022 targetFolder="Builds/VisualStudio2022">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="DDX3216Controller"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="DDX3216Controller"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_audio_basics"/>
+        <MODULEPATH id="juce_audio_devices"/>
+        <MODULEPATH id="juce_core"/>
+        <MODULEPATH id="juce_data_structures"/>
+        <MODULEPATH id="juce_events"/>
+        <MODULEPATH id="juce_graphics"/>
+        <MODULEPATH id="juce_gui_basics"/>
+        <MODULEPATH id="juce_gui_extra"/>
+      </MODULEPATHS>
+    </VS2022>
+  </EXPORTFORMATS>
+  <MODULES>
+    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0"/>
+    <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0"/>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0"/>
+    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0"/>
+  </MODULES>
+  <JUCEOPTIONS/>
+</JUCERPROJECT>

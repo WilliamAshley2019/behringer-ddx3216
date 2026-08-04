@@ -1,7 +1,9 @@
 https://github.com/aldipower/bitwig-ddx3216-controller
 
 Very cool project.
-
+another very cool project
+https://chrisdevblog.com/2026/06/08/running-dos-on-behringers-ddx3216-using-a-diy-x86-bios/
+https://github.com/xn--nding-jua/DDX3216
 
 
 None of this is confirmed it is still at an analysis level. As the firmware code is being analyzed to determine what steps can be taken to gain access to the system such as by inplementing a standard computer like i/o system that allows dynamic interface.

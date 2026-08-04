@@ -6,6 +6,11 @@ https://chrisdevblog.com/2026/06/08/running-dos-on-behringers-ddx3216-using-a-di
 https://github.com/xn--nding-jua/DDX3216
 
 
+Info for RS232 firmware update method?
+Windows DCB config string: 115200 baud, no parity, 8 data bits, 1 stop bit. 115200,N,8,1 Channel Library, EQ Library, Dynamics Library, Effects Library, Automation Data, Snapshots, Setup, Operating System (F_CHANL, F_EQL, F_DYNL, F_FXL, F_AUT, F_SNAPS, F_SETUP, F_ALL)
+
+
+
 None of this is confirmed it is still at an analysis level. As the firmware code is being analyzed to determine what steps can be taken to gain access to the system such as by inplementing a standard computer like i/o system that allows dynamic interface.
 
 ```
@@ -37,7 +42,7 @@ BELOW IS ANY LINKED FILES AND PROJECTS THAT ARE POTENTIALLY LINKED TO GETTING TH
 
 See ddx3216_fw_analyze.py
 CPUIC19_PROM.BIN (64KB Boot ROM)
-You've already identified this perfectly. Textbook x86 real-mode boot code with 8259 PIC initialization. This is the bootstrapper that:
+ x86 real-mode boot code with 8259 PIC initialization. This is the bootstrapper that:
 
 Sets up segments (0xFF00, 0x00F0)
 
@@ -155,7 +160,7 @@ The numbered sequence (1,2,4,5,6,7,8,9,0) is a classic POST progress indicator -
 
 
 V9938 Video Display Processor Register Writes (Records 1-46)
- t the 88, 84, 82, 81, 80 pattern - this is V9938 (MSX2 VDP) register initialization, not 68000/386 code!
+ t the 88, 84, 82, 81, 80 pattern - this is V9938 (MSX2 VDP) register initialization 
 
 For the DDX3216, this makes perfect sense because:
 
@@ -255,7 +260,7 @@ Each record = 1 VDP frame/page of display data
 129 bytes = 0x81 = probably the length of 1 display line or tile row
 The records at 0x153B, 0x15BC, 0x163D, 0x16BE are VDP tilemap/pattern data being written to VRAM, not code!
 
-Z80 Code Analysis
+Z80 Code Analysis  
 The Z80 code at the end of CPUIC17 is likely sound driver code:
 ```
 Hex	Opcode	What it's doing

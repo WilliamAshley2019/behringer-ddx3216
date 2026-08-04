@@ -10,6 +10,8 @@ Info for RS232 firmware update method?
 Windows DCB config string: 115200 baud, no parity, 8 data bits, 1 stop bit. 115200,N,8,1 Channel Library, EQ Library, Dynamics Library, Effects Library, Automation Data, Snapshots, Setup, Operating System (F_CHANL, F_EQL, F_DYNL, F_FXL, F_AUT, F_SNAPS, F_SETUP, F_ALL)
 
 
+There are three things I am curious about if 1. the keyboard/mouse native controls can be tapped somehow from the 386 chips default pins for those i/o methods and 2 if the default display pin is used for the LCD or if it can also be tapped to a cgi or monochrome monitor display beyond the lcd. The chips originally I think were designed for mouse/keyboard and monochrome or cgi monitor functions right on the chip I could be wrong about this but I think for the purpose of an editor this would probably be one of the most extreme methods and I am guessing there is likely a modern LCD display that is much thinner or righter that could mount tot he backtop of the DDX3216 to give a much larger graphical display to work from.  The mouse and keyboard might be an easier way of interacing with datapoints and navigating the display.. but this is likely years off for me.
+
 
 None of this is confirmed it is still at an analysis level. As the firmware code is being analyzed to determine what steps can be taken to gain access to the system such as by inplementing a standard computer like i/o system that allows dynamic interface.
 

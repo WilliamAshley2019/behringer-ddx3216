@@ -14,7 +14,10 @@ There are three things I am curious about if 1. the keyboard/mouse native contro
 I think a very tiny linux mode might be "the idea" however swap discs off the pmcia might be useful if they could serve as a hotswap harddrive just by changing the OS but I vague recall not sure if some type of read function could be set in the firmware so it reads the pmcia as part of the boot sequence a bit like a HDD.
 
 ```
-PCMCIA-to-CF Adapter: A mechanical adapter that lets you insert a standard CompactFlash card into a PCMCIA slot.True IDE/ATA CF Card: The CF card must support True IDE mode (most industrial or older cards do) so the computer registers it as a fixed disk rather than a generic camera memory card.PC Card Services: Real-mode or protected-mode drivers (like CardSoft or an ATA enabler) loaded in your operating system, especially for DOS or Windows 95
+PCMCIA-to-CF Adapter: A mechanical adapter that lets you insert a standard CompactFlash card into a PCMCIA slot.True IDE/ATA CF Card:
+ The CF card must support True IDE mode (most industrial or older cards do) so the computer registers it as a fixed disk rather than
+ a generic camera memory card.PC Card Services: Real-mode or protected-mode drivers (like CardSoft or an ATA enabler) loaded in your
+ operating system, especially for DOS.
 ```
 
 

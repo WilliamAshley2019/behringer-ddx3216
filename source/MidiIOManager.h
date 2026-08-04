@@ -1,4 +1,5 @@
 #pragma once
+#include <optional>
 #include <JuceHeader.h>
 #include "MixerState.h"
 
@@ -36,6 +37,15 @@ public:
     void sendChannelPan (int channelIndex, double pan);
     void sendChannelMute (int channelIndex, bool mute);
 
+    // Device/channel targeting. Default is omni (matches the independently-
+    // built aldipower/bitwig-ddx3216-controller script's default). Call
+    // setDeviceMidiChannel(n) if you've confirmed via sniffing that your
+    // desk needs an explicit channel instead.
+    void setOmni() { deviceMidiChannel.reset(); }
+    void setDeviceMidiChannel (int channel1to16) { deviceMidiChannel = channel1to16; }
+    bool isOmni() const { return ! deviceMidiChannel.has_value(); }
+    int getDeviceMidiChannel() const { return deviceMidiChannel.value_or (0); }
+
     void addRawMessageListener (RawMessageListener* l)    { rawListeners.add (l); }
     void removeRawMessageListener (RawMessageListener* l) { rawListeners.remove (l); }
 
@@ -47,4 +57,5 @@ private:
     std::unique_ptr<juce::MidiInput> midiInput;
     std::unique_ptr<juce::MidiOutput> midiOutput;
     juce::ListenerList<RawMessageListener> rawListeners;
+    std::optional<int> deviceMidiChannel; // nullopt == omni
 };

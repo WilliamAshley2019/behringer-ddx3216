@@ -74,7 +74,8 @@ void MidiIOManager::sendChannelVolume (int channelIndex, double db)
 {
     auto raw = DDX3216::volumeDbToRaw (db);
     auto frame = DDX3216::buildSingleParamChange ((uint8_t) (DDX3216::Module::kChannelBase + channelIndex),
-                                                   DDX3216::Param::kVolume, raw);
+                                                   DDX3216::Param::kVolume, raw,
+                                                   DDX3216::deviceByteForChannel (deviceMidiChannel));
     sendFrame (frame);
     state.setChannelVolumeDb (channelIndex, db);
 }
@@ -83,7 +84,8 @@ void MidiIOManager::sendChannelPan (int channelIndex, double pan)
 {
     auto raw = DDX3216::panPositionToRaw (pan);
     auto frame = DDX3216::buildSingleParamChange ((uint8_t) (DDX3216::Module::kChannelBase + channelIndex),
-                                                   DDX3216::Param::kPan, raw);
+                                                   DDX3216::Param::kPan, raw,
+                                                   DDX3216::deviceByteForChannel (deviceMidiChannel));
     sendFrame (frame);
     state.setChannelPan (channelIndex, pan);
 }
@@ -91,7 +93,8 @@ void MidiIOManager::sendChannelPan (int channelIndex, double pan)
 void MidiIOManager::sendChannelMute (int channelIndex, bool mute)
 {
     auto frame = DDX3216::buildSingleParamChange ((uint8_t) (DDX3216::Module::kChannelBase + channelIndex),
-                                                   DDX3216::Param::kMute, mute ? 1 : 0);
+                                                   DDX3216::Param::kMute, mute ? 1 : 0,
+                                                   DDX3216::deviceByteForChannel (deviceMidiChannel));
     sendFrame (frame);
     state.setChannelMute (channelIndex, mute);
 }

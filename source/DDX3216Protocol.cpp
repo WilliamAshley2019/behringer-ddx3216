@@ -66,6 +66,26 @@ namespace DDX3216
         return buildParamChangeFrame ({ ParamChange { module, param, rawValue } }, deviceByte);
     }
 
+    juce::MidiMessage buildChannelAttenuation (uint8_t channel, int rawValue, uint8_t deviceByte)
+    {
+        auto hi = (uint8_t) ((rawValue >> 7) & 0x7F);
+        auto lo = (uint8_t) (rawValue & 0x7F);
+
+        std::vector<uint8_t> body;
+        body.push_back (kBehringerManufacturerId[0]);
+        body.push_back (kBehringerManufacturerId[1]);
+        body.push_back (kBehringerManufacturerId[2]);
+        body.push_back (deviceByte);
+        body.push_back (kApparatusId);
+        body.push_back (kFunctionChannelAttenuation);
+        body.push_back (1);       // nn = 1 entry
+        body.push_back (channel); // 0 == "channel 1" per the doc
+        body.push_back (hi);
+        body.push_back (lo);
+
+        return juce::MidiMessage::createSysExMessage (body.data(), (int) body.size());
+    }
+
     std::vector<ParamChange> parseIncomingSysEx (const juce::MidiMessage& message)
     {
         std::vector<ParamChange> result;

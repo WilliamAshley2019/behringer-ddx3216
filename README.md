@@ -6,6 +6,45 @@ https://chrisdevblog.com/2026/06/08/running-dos-on-behringers-ddx3216-using-a-di
 https://github.com/xn--nding-jua/DDX3216   This dude is totally worth checking out what he is doing great youtube channels also Trekkie also I think, he has great x32 stuff he is doing too.
 
 
+2026-08-04
+# DDX3216 Controller
+
+A native Windows app for controlling a Behringer DDX3216 digital mixing
+console from your computer over MIDI and/or RS232 -- 32 channel faders and
+pan knobs in a scrollable GUI, plus a live log of every message sent and
+received.
+
+TO DO add EQ/dynamics, bus/aux/FX routing, firmware updates.
+
+## TO BUILD
+ 
+ JUCE 8.0.12 and Visual Studio 2022 or later
+
+## Building
+ 
+## Using the app
+
+- Each of the 32 vertical strips is one input channel: fader (volume), knob
+  (pan), and an **M** button (mute). Scroll horizontally to see all 32.
+- Every message the app sends or receives is shown in the log pane at the
+  bottom, prefixed `MIDI OUT` / `MIDI IN` / `RS232 OUT` / `RS232 IN`, so you
+  can see exactly what's going back and forth.
+- Moving a physical fader or knob on the desk updates the app's GUI in real
+  time (confirmed working); moving a control in the app sends the
+  corresponding command to the desk over whichever transport(s) are connected.
+
+## Current status
+- Volume, pan, and mute for channels 1-32, over MIDI and/or RS232
+ TO DO insure passthrough to virtual midi so the standalone can act as a routing tool to virtual midi devices to bind it to midi scripts for instance.
+ ## Why use this?
+
+Behringer's own tools for the DDX3216 (a 2002-era console) are 32-bit
+Windows XP-era software that's increasingly awkward to run on modern
+machines. This project reimplements the documented control protocol as a
+native, modern (x64) application.  While Aldi is doing wonderful things this project is chugging along to long term goals that are very similar in building an updated OS for the ddx3216 and ideally with time also expanding teh capabilities of the device by unlocking its capabilities as a computer to expand on what it is capable of doing - albeit as a 386 processor with some very cool audio processing capabilities - of course the PLUT 3022 is still something to sort out. 
+
+2026-08-03
+
 Info for RS232 firmware update method?
 Windows DCB config string: 115200 baud, no parity, 8 data bits, 1 stop bit. 115200,N,8,1 Channel Library, EQ Library, Dynamics Library, Effects Library, Automation Data, Snapshots, Setup, Operating System (F_CHANL, F_EQL, F_DYNL, F_FXL, F_AUT, F_SNAPS, F_SETUP, F_ALL)
 

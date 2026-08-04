@@ -5,6 +5,11 @@ another very cool project
 https://chrisdevblog.com/2026/06/08/running-dos-on-behringers-ddx3216-using-a-diy-x86-bios/
 https://github.com/xn--nding-jua/DDX3216   This dude is totally worth checking out what he is doing great youtube channels also Trekkie also I think, he has great x32 stuff he is doing too.
 
+Note on the Behringer Branded PLUT-3022-002 chip. My current beleif is that it may be a variant of the LT-3022  and serves as a power regulator for the Analog Devices sharc dsp chips for that section.  Basically insuring very clean stable representation of the audio and transforms (like slider position etc..)
+
+LT3022-1.2, LT3022-1.5, LT3022-1.8 — those are fixed 1.2V/1.5V/1.8V outputs, which are exactly the kind of low-voltage core-supply rails SHARC DSPs typically need (separate from their higher-voltage I/O rails). It's completely standard PCB design practice to put a small LDO physically close to a DSP specifically to give it a clean, tightly-regulated core voltage with minimal noise and trace length. So instead of "PLUT 3022 controls the DSPs," a more mundane but very plausible read is "PLUT 3022 powers the DSPs."  Could the 0002 meaning it is a 2V regulator? LDOs are surrounded by a couple of small ceramic/tantalum bypass capacitors and not much else — no clock lines, no data bus traces fanning out to multiple chips,  a telltale sign it is a power chip. 
+ 
+
 
 2026-08-04
 # DDX3216 Controller

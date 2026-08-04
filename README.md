@@ -3,7 +3,7 @@ https://github.com/aldipower/bitwig-ddx3216-controller
 Very cool project.
 another very cool project
 https://chrisdevblog.com/2026/06/08/running-dos-on-behringers-ddx3216-using-a-diy-x86-bios/
-https://github.com/xn--nding-jua/DDX3216
+https://github.com/xn--nding-jua/DDX3216   This dude is totally worth checking out what he is doing great youtube channels also Trekkie also I think, he has great x32 stuff he is doing too.
 
 
 Info for RS232 firmware update method?

@@ -13,7 +13,7 @@ Note on the Behringer Branded PLUT-3022-002 chip. My current beleif is that it m
 LT3022-1.2, LT3022-1.5, LT3022-1.8 — those are fixed 1.2V/1.5V/1.8V outputs, which are exactly the kind of low-voltage core-supply rails SHARC DSPs typically need (separate from their higher-voltage I/O rails). It's completely standard PCB design practice to put a small LDO physically close to a DSP specifically to give it a clean, tightly-regulated core voltage with minimal noise and trace length. So instead of "PLUT 3022 controls the DSPs," a more mundane but very plausible read is "PLUT 3022 powers the DSPs."  Could the 0002 meaning it is a 2V regulator? LDOs are surrounded by a couple of small ceramic/tantalum bypass capacitors and not much else — no clock lines, no data bus traces fanning out to multiple chips,  a telltale sign it is a power chip. 
  
 THIS is more info on the plut3302 0002
-
+```
 IC7: OL3804-1PL84C (The "PLUT 3304" Chip)What it is: This is a Programmable Logic Device (CPLD) in an 84-pin PLCC package (Sheet 1).Primary Function: It generates all necessary chip selects, control strobes, enable signals, and routing logic across the board.Pin Breakdown & Logic Routing:Host CPU Interface: Connects directly to the main system bus header (DSP CONN / X5) via host address lines (SA0–SA15), data lines (SD0–SD15), write/read strobes (SEN, SER), and ready signals (IOCHRDY).DSP Control Outputs: Directly controls chip selects ($\overline{\text{CE1}}$, $\overline{\text{CE2}}$, $\overline{\text{CE3}}$, $\overline{\text{CE4}}$) for each of the four ADSP-21065L SHARC processors.SDRAM Latch Control: Drives byte-enable and output-enable controls (LEVDSPH, LEVDSP, LERDSPH, LERDSP, OEVOSP, OEROSP) to manage data transfer timing across the 32-bit data bus.System Clocking & OscillatorsMaster Clock Generator (Q1 / IC1): A 30.000 MHz Crystal Oscillator (Q1) feeds IC1 (74HC4025260).DSP Clock Distribution: IC1 acts as a clock buffer/divider that outputs four dedicated clock signals (CLK30_1, CLK30_2, CLK30_3, CLK30_4), each routing directly to pin 30 (CLKIN) of one of the four SHARC processors (Sheets 3–6).Memory & Latching Subsystem (Sheet 2)Main SDRAM (IC13 - MT49LC016 / 48-pin TSOP): Serves as shared dynamic RAM accessible by the DSP array.Data Multiplexing (IC10, IC11, IC14, IC16): Four 74LV1573 octal transparent latches multiplex and isolate the lower (bits 0–15) and upper (bits 16–31) halves of the DSP data bus (DSPDATA) to/from the SDRAM and host interface.Power Rails (VCC vs. VDD)VCC (+5V): Main system 5.0V supply rail.VDD (+3.3V): Low-voltage supply derived via filtering capacitors (C18 470µF/25V, C1 100nF, C17, C3) to power the 3.3V I/O cores of the ADSP-21065L SHARCs, CPLD, and 74LV-series logic.Board Interconnection Architecture                
     
     ````          +-----------------------------------+
@@ -31,7 +31,7 @@ IC7: OL3804-1PL84C (The "PLUT 3304" Chip)What it is: This is a Programmable Logi
          | CE1                 |   |   | CE4                  |
          v                     |   |   v                      v
  ````
-
+```
 +-----------------+            |   | +-----------------+  +-----------------+
 |  DSP 1 (IC3A)   |            |   | |  DSP 4 (IC6A)   |  | 74LV1573 Data   |
 |  ADSP-21065L    |            |   | |  ADSP-21065L    |  | Latches & SDRAM |

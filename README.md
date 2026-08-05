@@ -56,7 +56,50 @@ halves of the DSP data bus (DSPDATA) to/from the SDRAM and host interface.Power 
                                v   v
                       [ DSP 2 & DSP 3 (IC4A / IC5A) ]
 ```
+```1. System Diagnostic Logs (--DPPOUTO ETSRE--)This section contains diagnostic routine outputs, status flags, and error codes for various subsystems:Plaintext--DPPOUTO TEST RESULTS--
+1 S ODPORM      - DP1234 OK
+1 S ODERR!!     - DP2LA ERR!
+1 S ODERR!!     - DP4LA ERR!
+1 S ODGNRLERR!! - TSIGDPCMUIAIN
+2 S OMNCTO OK   - DPCMUIAINERR%
+3 S EOYO        - DP1234 IS LOK
+3 S E RO s      - DPIS ERR%
+5 S YCT 41KZERR%
+5 41KZ s        - DPSN O4 H RO s
+Key Diagnostic IdentifiersDP1234 / DPIS: Main DSP or Direct Processing logic path status.41KZERR / 41KZ: Sample rate / clock lock status (likely referencing 44.1kHz / 48kHz clock generator locks).ODGNRLERR / DPCMUIAINERR: General Digital Signal Processing Communication / Bus Interface Error.2. Redundancy & Signal Control (--RDCINTS CEN--)This section covers signal routing, module attachment status, and redundancy checks:Plaintext--REDUNDANCY / SIGNAL CONTROL--
+1 TSIG MD OT ATN.. 1 MD OTO - IIPR ERR
+- ETN S3 OT ATN.. 2 R22PR OK
+- S3 OTERR 2R22PR ERR
+- MT ERR / MT HC / MT OK
+- ETN OOU EILPR: WIIG.
+- RO OOU d ORSOS / OAA
+- DPLA RGA - DP1234 OK
+- DP1LA ERR! / DP2LA ERR! / DP3LA ERR! / DP4LA ERR!
+- DPLA EEA ERR!
+- 7 IMDL2 IS ATN.. 7 IMDL2 IS LOK 7 IMDL2 ERR%
+- DPSN OW ERR
+- PI OPTS: CNETPU - SDFLO ET ERR / SDFLO ET OK
+Module Status BreakdownMD / IMDL2: Interface or Input Modules (Module 1 through 7).DP1LA–DP4LA: Line Amplifier / Direct Channel card diagnostic checks (currently reporting errors across channels 1–4).SDFLO / EILPR: Sidechain / Aux Flow or External Interfacing status flags.3. Analog & Digital Interface Status (--NLGTS CEN-- / --MDL ETSRE--)Plaintext--ANALOG TEST CENTER--
+LAIG DP PORM
+ET1 IIA EO TS : 1H BS TS
+IPT 12 | IPT 34 | IPT 56 | IPT 78 | IPT 91
+ET8 NU 11 | ET9 NU 31 | ET1: IPT 1/6 L4L4
 
+--RIBON TEST RESULTS--
+AH FFDR AET ECER CLBA I GFDR N ODN EALS
+FDR AIRTO OEO OEFDR RN ERR SM AESAE OTO IIS L AESO
+
+--MODULE TEST RESULTS--
+OUE%: sd-MDL d%% OK
+OUE%: sdERR%
+OUE%: ORSOS
+
+--OUTPUT TEST ENGINE--
+ERR ERR ERR ERR ERR
+MT HPN TRS ODN
+PES OTC ORDAE
+Bus & Ribbon DiagnosticsFDR / CLBA FDR: Fader / Calibration Fader motor and wiper position tests.IPT 12–91: Input Pair Bus testing (1/2 through 9/10).RIBON TEST: Ribbon interconnect continuity and control voltage sensing between the mainboard and sub-boards.Summary of Critical Errors Detected in DataSubsystemStatus CodeDescriptionDirect Processing LinesDP1LA - DP4LA ERRLine Amp / Channel driver fault on mainboard channels 1–4.Clock/Sync41KZERRClock system failing to lock at standard sampling rate.Output StageERR ERR ERR ERR ERROutput Routing Engine / Headphones (HPN) communication failure.Comm BusDPCMUIAINERRInternal SPI/I2C/Parallel bus communication timeout between control board and mainboard.
+```
 2026-08-04
 # DDX3216 Controller
 

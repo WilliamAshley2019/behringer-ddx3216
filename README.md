@@ -100,6 +100,20 @@ MT HPN TRS ODN
 PES OTC ORDAE
 Bus & Ribbon DiagnosticsFDR / CLBA FDR: Fader / Calibration Fader motor and wiper position tests.IPT 12–91: Input Pair Bus testing (1/2 through 9/10).RIBON TEST: Ribbon interconnect continuity and control voltage sensing between the mainboard and sub-boards.Summary of Critical Errors Detected in DataSubsystemStatus CodeDescriptionDirect Processing LinesDP1LA - DP4LA ERRLine Amp / Channel driver fault on mainboard channels 1–4.Clock/Sync41KZERRClock system failing to lock at standard sampling rate.Output StageERR ERR ERR ERR ERROutput Routing Engine / Headphones (HPN) communication failure.Comm BusDPCMUIAINERRInternal SPI/I2C/Parallel bus communication timeout between control board and mainboard.
 ```
+
+```
+1. SHARC DSP Instruction & Control ArchitectureSHARC (Super Harvard Architecture) DSPs process audio using 48-bit instructions, 32-bit/40-bit floating-point math, and dual-data fetch cycles. Key instructions and internal registers manage real-time audio routing and signal processing:Core Register SetData Registers (R0–R15 / F0–F15): Used for fixed-point and 32/40-bit floating-point MAC (Multiply-Accumulate) and ALU operations.DAGs (Data Address Generators - I0–I15, M0–M15, L0–L15, B0–B15):I (Index): Holds current memory pointers.M (Modify): Stores stride/offset values.L (Length) & B (Base): Define circular buffer boundaries for real-time audio delay lines, FIR, and IIR filters.System & Status Registers:MODE1 / MODE2: Controls bit-reversal, floating-point rounding modes, and register bank swapping.ASTATx / STKYx: Arithmetic status flags and sticky condition indicators (overflow, underflow, floating-point invalid).SYSCTL: Controls internal bus routing, memory mapping, and host memory configuration.Multi-Function Parallel InstructionsSHARC achieves high throughput by performing a math computation alongside two memory transfers in a single clock cycle:Code snippet! Compute multiplication & addition while loading next samples from Data Memory (DM) and Program Memory (PM)
+R0 = R1 * R2,  R3 = R4 + R5,  R6 = DM(I0, M0),  R7 = PM(I8, M8);
+2. Interface Protocol & PLUT3022 Control LogicThe PLUT3022 is a custom 84-pin PLCC IC/ASIC (commonly used in digital routing and audio processing hardware) that acts as glue logic, bus arbitration, and host-interface control between the system MCU and the SHARC DSP.Control & Host-Port Interfacing (HPI / SPI)DMA & Bus Arbitration (DMACx, HADDR, HDATA):The host controller reads and writes to SHARC internal RAM (Block 0/1/2/3) using Direct Memory Access (DMA) controlled by address and data strobes on the ASIC.Frame headers like Ç‡É and Å¿àˇ serve as sync boundaries for host-to-DSP packet transmissions.SPORT (Serial Port) Framing:Audio streams pass through SHARC SPORT interfaces using multichannel TDM (Time Division Multiplexing) framed by TCLK, RCLK, TFS, and RFS signals.Registers like IPT12, IPT34, IPT56, and IPT78 map physical hardware inputs (Input 1/2, 3/4, etc.) into internal DSP TDM slots.3. Firmware Control Flags & Error CodesFrom the raw string table in the memory dump, several diagnostic routines and control pathways map directly to hardware routing states:Control String / FlagFunction & Context--DPPOUTO ETSRE--Digital Patch Point Output Reset / Routing Test EntryDPCMUIAINDigital Patch Controller Main Input SubsystemDPCMUIAINERR%Input Subsystem Parity/Frame Sync Error TrapFAHERRBK0% / FAHERRBK1%Fallback Memory Bank 0/1 Allocation ErrorIPT12 – IPT91Channel Pair Addressing for Direct Hardware Routing SwitchesPI OPTS:CNETPUParallel Interface Configuration / Central Network Processing Unit Options
+4. Boot & Firmware Load Flow
+Preamble Validation: The MCU checks the header (à0   Ñp ...) to verify image integrity.
+
+DSP Boot Loader Transmission: The MCU pumps the 48-bit instruction boot loader via the parallel host interface into SHARC
+ internal L1 memory.
+
+Control Loop Execution: Once loaded, the SHARC executes its inner DSP processing loop, while the PLUT3022 handles asynchronous hardware switches, front-panel controls, and memory-mapped status flags.
+
+```
 2026-08-04
 # DDX3216 Controller
 

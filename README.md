@@ -686,7 +686,7 @@ Requires heavy external layers.                     Includes a tiny, native TCP/
 
 ```
 
-
+ ROM-DOS features an RXE conversion tool. It alters your compiled C or Assembly binaries so that the CPU executes code blocks directly from the EPROM physical memory addresses, saving your precious system RAM purely for active data processing and variable storage.
 
 
 

@@ -15,23 +15,41 @@ LT3022-1.2, LT3022-1.5, LT3022-1.8 — those are fixed 1.2V/1.5V/1.8V outputs, w
 THIS is more info on the plut3302 0002
 ```
 IC7: OL3804-1PL84C (The "PLUT 3304" Chip)What it is: This is a Programmable Logic Device (CPLD) in an
+
  84-pin PLCC package (Sheet 1).Primary Function: It generates all necessary chip selects, control
+
 strobes, enable signals, and routing logic across the board.Pin Breakdown & Logic Routing:Host CPU
+
  Interface: Connects directly to the main system bus header (DSP CONN / X5) via host address lines
+
  (SA0–SA15), data lines (SD0–SD15), write/read strobes (SEN, SER), and ready signals (IOCHRDY).DSP
+
  Control Outputs: Directly controls chip selects ($\overline{\text{CE1}}$, $\overline{\text{CE2}}$,
+
  $\overline{\text{CE3}}$, $\overline{\text{CE4}}$) for each of the four ADSP-21065L SHARC processors.
+
 SDRAM Latch Control: Drives byte-enable and output-enable controls (LEVDSPH, LEVDSP, LERDSPH, LERDSP,
+
  OEVOSP, OEROSP) to manage data transfer timing across the 32-bit data bus.System Clocking & Oscillators
+
 Master Clock Generator (Q1 / IC1): A 30.000 MHz Crystal Oscillator (Q1) feeds IC1 (74HC4025260).DSP
+
 Clock Distribution: IC1 acts as a clock buffer/divider that outputs four dedicated clock signals
+
 (CLK30_1, CLK30_2, CLK30_3, CLK30_4), each routing directly to pin 30 (CLKIN) of one of the four SHARC
+
 processors (Sheets 3–6).Memory & Latching Subsystem (Sheet 2)Main SDRAM (IC13 - MT49LC016 / 48-pin TSOP):
+
 Serves as shared dynamic RAM accessible by the DSP array.Data Multiplexing (IC10, IC11, IC14, IC16):
+
  Four 74LV1573 octal transparent latches multiplex and isolate the lower (bits 0–15) and upper (bits 16–31)
+
 halves of the DSP data bus (DSPDATA) to/from the SDRAM and host interface.Power Rails (VCC vs. VDD)VCC (+5V):
+
  Main system 5.0V supply rail.VDD (+3.3V): Low-voltage supply derived via filtering capacitors (C18 470µF/25V,
- C1 100nF, C17, C3) to power the 3.3V I/O cores of the ADSP-21065L SHARCs, CPLD, and 74LV-series logic.Board Interconnection Architecture                
+
+ C1 100nF, C17, C3) to power the 3.3V I/O cores of the ADSP-21065L SHARCs, CPLD, and 74LV-series logic.
+Board Interconnection Architecture                
     
     ```           +-----------------------------------+
                   |      DSP CONN / Host CPU (X5)     |
@@ -66,11 +84,18 @@ halves of the DSP data bus (DSPDATA) to/from the SDRAM and host interface.Power 
 3 S E RO s      - DPIS ERR%
 5 S YCT 41KZERR%
 5 41KZ s        - DPSN O4 H RO s
-Key Diagnostic IdentifiersDP1234 / DPIS: Main DSP or Direct Processing logic path status.41KZERR / 41KZ: Sample rate / clock lock status (likely referencing 44.1kHz / 48kHz clock generator locks).ODGNRLERR / DPCMUIAINERR: General Digital Signal Processing Communication / Bus Interface Error.2. Redundancy & Signal Control (--RDCINTS CEN--)This section covers signal routing, module attachment status, and redundancy checks:Plaintext--REDUNDANCY / SIGNAL CONTROL--
+Key Diagnostic IdentifiersDP1234 / DPIS: Main DSP or Direct Processing logic path status.41KZERR / 41KZ: Sample rate / clock lock status (likely referencing 44.1kHz / 48kHz
+ clock generator locks).ODGNRLERR / DPCMUIAINERR: General Digital Signal Processing Communication / Bus Interface Error.2. Redundancy & Signal Control (--RDCINTS CEN--)This
+section covers signal routing, module attachment status, and redundancy checks:Plaintext--REDUNDANCY / SIGNAL CONTROL--
+
 1 TSIG MD OT ATN.. 1 MD OTO - IIPR ERR
+
 - ETN S3 OT ATN.. 2 R22PR OK
+
 - S3 OTERR 2R22PR ERR
+
 - MT ERR / MT HC / MT OK
+
 - ETN OOU EILPR: WIIG.
 - RO OOU d ORSOS / OAA
 - DPLA RGA - DP1234 OK
@@ -79,11 +104,18 @@ Key Diagnostic IdentifiersDP1234 / DPIS: Main DSP or Direct Processing logic pat
 - 7 IMDL2 IS ATN.. 7 IMDL2 IS LOK 7 IMDL2 ERR%
 - DPSN OW ERR
 - PI OPTS: CNETPU - SDFLO ET ERR / SDFLO ET OK
-Module Status BreakdownMD / IMDL2: Interface or Input Modules (Module 1 through 7).DP1LA–DP4LA: Line Amplifier / Direct Channel card diagnostic checks (currently reporting errors across channels 1–4).SDFLO / EILPR: Sidechain / Aux Flow or External Interfacing status flags.3. Analog & Digital Interface Status (--NLGTS CEN-- / --MDL ETSRE--)Plaintext--ANALOG TEST CENTER--
+Module Status BreakdownMD / IMDL2: Interface or Input Modules (Module 1 through 7).
+DP1LA–DP4LA: Line Amplifier / Direct Channel card diagnostic checks (currently reporting errors across channels 1–4).
+SDFLO / EILPR: Sidechain / Aux Flow or External Interfacing status flags.3. Analog & Digital Interface Status
+(--NLGTS CEN-- / --MDL ETSRE--)Plaintext--ANALOG TEST CENTER--
 LAIG DP PORM
+
 ET1 IIA EO TS : 1H BS TS
+
 IPT 12 | IPT 34 | IPT 56 | IPT 78 | IPT 91
+
 ET8 NU 11 | ET9 NU 31 | ET1: IPT 1/6 L4L4
+
 
 --RIBON TEST RESULTS--
 AH FFDR AET ECER CLBA I GFDR N ODN EALS
@@ -98,13 +130,36 @@ OUE%: ORSOS
 ERR ERR ERR ERR ERR
 MT HPN TRS ODN
 PES OTC ORDAE
-Bus & Ribbon DiagnosticsFDR / CLBA FDR: Fader / Calibration Fader motor and wiper position tests.IPT 12–91: Input Pair Bus testing (1/2 through 9/10).RIBON TEST: Ribbon interconnect continuity and control voltage sensing between the mainboard and sub-boards.Summary of Critical Errors Detected in DataSubsystemStatus CodeDescriptionDirect Processing LinesDP1LA - DP4LA ERRLine Amp / Channel driver fault on mainboard channels 1–4.Clock/Sync41KZERRClock system failing to lock at standard sampling rate.Output StageERR ERR ERR ERR ERROutput Routing Engine / Headphones (HPN) communication failure.Comm BusDPCMUIAINERRInternal SPI/I2C/Parallel bus communication timeout between control board and mainboard.
+Bus & Ribbon DiagnosticsFDR / CLBA FDR: Fader / Calibration Fader motor and wiper position tests.IPT 12–91: Input Pair Bus testing (1/2 through 9/10).
+RIBON TEST: Ribbon interconnect continuity and control voltage sensing between the mainboard and sub-boards.
+Summary of Critical Errors Detected in DataSubsystemStatus
+CodeDescriptionDirect Processing LinesDP1LA -
+ DP4LA ERRLine Amp / Channel driver fault on mainboard channels 1–4.Clock/Sync41KZERRClock system failing to lock at standard sampling rate.Output StageERR ERR ERR ERR
+ERROutput Routing Engine / Headphones (HPN) communication failure.Comm BusDPCMUIAINERRInternal SPI/I2C/Parallel bus communication timeout between control board and mainboard.
 ```
 
 ```
-1. SHARC DSP Instruction & Control ArchitectureSHARC (Super Harvard Architecture) DSPs process audio using 48-bit instructions, 32-bit/40-bit floating-point math, and dual-data fetch cycles. Key instructions and internal registers manage real-time audio routing and signal processing:Core Register SetData Registers (R0–R15 / F0–F15): Used for fixed-point and 32/40-bit floating-point MAC (Multiply-Accumulate) and ALU operations.DAGs (Data Address Generators - I0–I15, M0–M15, L0–L15, B0–B15):I (Index): Holds current memory pointers.M (Modify): Stores stride/offset values.L (Length) & B (Base): Define circular buffer boundaries for real-time audio delay lines, FIR, and IIR filters.System & Status Registers:MODE1 / MODE2: Controls bit-reversal, floating-point rounding modes, and register bank swapping.ASTATx / STKYx: Arithmetic status flags and sticky condition indicators (overflow, underflow, floating-point invalid).SYSCTL: Controls internal bus routing, memory mapping, and host memory configuration.Multi-Function Parallel InstructionsSHARC achieves high throughput by performing a math computation alongside two memory transfers in a single clock cycle:Code snippet! Compute multiplication & addition while loading next samples from Data Memory (DM) and Program Memory (PM)
+1. SHARC DSP Instruction & Control ArchitectureSHARC (Super Harvard Architecture) DSPs process audio using 48-bit instructions, 32-bit/40-bit floating-point math, and
+dual-data fetch cycles. Key instructions and internal registers manage real-time audio routing and signal processing:Core Register SetData Registers (R0–R15 / F0–F15): Used
+for fixed-point and 32/40-bit floating-point MAC (Multiply-Accumulate) and ALU operations.DAGs (Data Address Generators - I0–I15, M0–M15, L0–L15, B0–B15):I (Index): Holds
+current memory pointers.M (Modify): Stores stride/offset values.L (Length) & B (Base): Define circular buffer boundaries for real-time audio delay lines, FIR, and IIR
+filters.System & Status Registers:MODE1 / MODE2: Controls bit-reversal, floating-point rounding modes, and register bank swapping.ASTATx / STKYx: Arithmetic status flags and
+sticky condition indicators (overflow, underflow, floating-point invalid).SYSCTL: Controls internal bus routing, memory mapping, and host memory configuration.Multi-Function
+Parallel InstructionsSHARC achieves high throughput by performing a math computation alongside two memory transfers in a single clock cycle:Code snippet! Compute
+multiplication & addition while loading next samples from Data Memory (DM) and Program Memory (PM)
+
 R0 = R1 * R2,  R3 = R4 + R5,  R6 = DM(I0, M0),  R7 = PM(I8, M8);
-2. Interface Protocol & PLUT3022 Control LogicThe PLUT3022 is a custom 84-pin PLCC IC/ASIC (commonly used in digital routing and audio processing hardware) that acts as glue logic, bus arbitration, and host-interface control between the system MCU and the SHARC DSP.Control & Host-Port Interfacing (HPI / SPI)DMA & Bus Arbitration (DMACx, HADDR, HDATA):The host controller reads and writes to SHARC internal RAM (Block 0/1/2/3) using Direct Memory Access (DMA) controlled by address and data strobes on the ASIC.Frame headers like Ç‡É and Å¿àˇ serve as sync boundaries for host-to-DSP packet transmissions.SPORT (Serial Port) Framing:Audio streams pass through SHARC SPORT interfaces using multichannel TDM (Time Division Multiplexing) framed by TCLK, RCLK, TFS, and RFS signals.Registers like IPT12, IPT34, IPT56, and IPT78 map physical hardware inputs (Input 1/2, 3/4, etc.) into internal DSP TDM slots.3. Firmware Control Flags & Error CodesFrom the raw string table in the memory dump, several diagnostic routines and control pathways map directly to hardware routing states:Control String / FlagFunction & Context--DPPOUTO ETSRE--Digital Patch Point Output Reset / Routing Test EntryDPCMUIAINDigital Patch Controller Main Input SubsystemDPCMUIAINERR%Input Subsystem Parity/Frame Sync Error TrapFAHERRBK0% / FAHERRBK1%Fallback Memory Bank 0/1 Allocation ErrorIPT12 – IPT91Channel Pair Addressing for Direct Hardware Routing SwitchesPI OPTS:CNETPUParallel Interface Configuration / Central Network Processing Unit Options
+2. Interface Protocol & PLUT3022 Control LogicThe PLUT3022 is a custom 84-pin PLCC IC/ASIC (commonly used in digital routing and audio processing hardware) that acts as glue
+logic, bus arbitration, and host-interface control between the system MCU and the SHARC DSP.Control & Host-Port Interfacing (HPI / SPI)DMA & Bus Arbitration (DMACx, HADDR,
+HDATA):The host controller reads and writes to SHARC internal RAM (Block 0/1/2/3) using Direct Memory Access (DMA) controlled by address and data strobes on the ASIC.Frame
+headers like Ç‡É and Å¿àˇ serve as sync boundaries for host-to-DSP packet transmissions.SPORT (Serial Port) Framing:Audio streams pass through SHARC SPORT interfaces using
+multichannel TDM (Time Division Multiplexing) framed by TCLK, RCLK, TFS, and RFS signals.Registers like IPT12, IPT34, IPT56, and IPT78 map physical hardware inputs (Input
+1/2, 3/4, etc.) into internal DSP TDM slots.3. Firmware Control Flags & Error CodesFrom the raw string table in the memory dump, several diagnostic routines and control
+pathways map directly to hardware routing states:Control String / FlagFunction & Context--DPPOUTO ETSRE--Digital Patch Point Output Reset / Routing Test EntryDPCMUIAINDigital
+Patch Controller Main Input SubsystemDPCMUIAINERR%Input Subsystem Parity/Frame Sync Error TrapFAHERRBK0% / FAHERRBK1%Fallback Memory Bank 0/1 Allocation ErrorIPT12 –
+IPT91Channel Pair Addressing for Direct Hardware Routing SwitchesPI OPTS:CNETPUParallel Interface Configuration / Central Network Processing Unit Options
+
+
 4. Boot & Firmware Load Flow
 Preamble Validation: The MCU checks the header (à0   Ñp ...) to verify image integrity.
 

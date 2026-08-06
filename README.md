@@ -653,7 +653,9 @@ MOre from Chris on the 5pdin connection
 The 5-Pin DIN Connection: AT Keyboard PortOn a classic PC motherboard from the 386/486 era, a 5-pin DIN connector is the standard IBM AT Keyboard Port.
 Why it is there: Because the DDX3216's motherboard is an x86 computer running an embedded operating system, the engineers needed a way to type commands, run diagnostics, and debug the operating system during the early development phase of the mixer.
 How it traces out: If you follow the traces from those 5 unpopulated pinholes, they lead back to the Toshiba UART chip or directly to the legacy keyboard controller pins of the AMD Elan SC300.
-
+This is why the freedos project serves as an interesting jumping off point for making a custom operating system that contains both the early test prototyping capabilities and the mixer eprom
+firmware.
+The unpopulated 5-pin DIN becomes a fully active keyboard port, allowing you to plug in a vintage keyboard and type at a DOS prompt on the mixer's built-in LCD screen.Populating the Intel 82078 section would allow you to plug in a standard 3.5" floppy drive (or a modern USB floppy emulator like a Gotek / N-Drive) and read standard floppy disks.
 
 
 License

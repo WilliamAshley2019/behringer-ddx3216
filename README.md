@@ -669,10 +669,20 @@ especially with modifiable sourcecode I thought I would post up ROMDOS as it is 
 and ram limits on the ddx3216. 
 
 ```
-ROM-DOS Different From Standard MS-DOS?FeatureStandard MS-DOSDatalight ROM-DOSExecution PathMust be loaded into RAM to execute.
-Executes directly inside the ROM/Flash chip (XIP - Execute in Place).System FootprintLarge; fixed core components.Ultra-lightweight (as little as 54KB ROM / 10KB RAM).CustomizabilityFixed
-monolithic binary files.Features a BUILD Utility to remove unused drivers and optimize space.Storage ArchitectureLegacy FAT16 limitations.Native FAT32, LBA, and Long File Name (LFN) kernel
-support.Network CapabilityRequires heavy external layers.Includes a tiny, native TCP/IP socket stack.
+ROM-DOS Different From Standard MS-DOS?
+FeatureStandard
+MS-DOS                                              Datalight ROM-DOS
+Execution Path  
+Must be loaded into RAM to execute.                 Executes directly inside the ROM/Flash chip (XIP - Execute in Place).
+System Footprint
+Large; fixed core components.                       Ultra-lightweight (as little as 54KB ROM / 10KB RAM).
+Customizability 
+Fixed monolithic binary files.                      Features a BUILD Utility to remove unused drivers and optimize space.
+
+Storage Architecture
+Legacy FAT16 limitations.                           Native FAT32, LBA, and Long File Name (LFN) kernel support.
+Network Capability
+Requires heavy external layers.                     Includes a tiny, native TCP/IP socket stack.
 
 ```
 

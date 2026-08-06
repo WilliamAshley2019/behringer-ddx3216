@@ -670,8 +670,8 @@ and ram limits on the ddx3216.
 
 ```
 ROM-DOS Different From Standard MS-DOS?
-FeatureStandard
-MS-DOS                                              Datalight ROM-DOS
+Features
+**MS-DOS                                              Datalight ROM-DOS**
 Execution Path  
 Must be loaded into RAM to execute.                 Executes directly inside the ROM/Flash chip (XIP - Execute in Place).
 System Footprint

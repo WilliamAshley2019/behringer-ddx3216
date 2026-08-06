@@ -647,6 +647,15 @@ media storage density using the Configuration Control Register (CCR) located at 
 transfer speed to 500 Kbps).For older 360KB/720KB Low Density disks, write 0x02 to port 0x3F7 (Sets transfer speed to 250 Kbps).
 ```
 It has me wonder if maybe one of the floppy drives could provide a direct data uplink rather than using a floppy drive just feed data in the floppy block format as datachunks, for say a gotek like usb point OR virtual drive that is linked via some type of memory controller that is wireless chip or wired.
+
+MOre from Chris on the 5pdin connection
+
+The 5-Pin DIN Connection: AT Keyboard PortOn a classic PC motherboard from the 386/486 era, a 5-pin DIN connector is the standard IBM AT Keyboard Port.
+Why it is there: Because the DDX3216's motherboard is an x86 computer running an embedded operating system, the engineers needed a way to type commands, run diagnostics, and debug the operating system during the early development phase of the mixer.
+How it traces out: If you follow the traces from those 5 unpopulated pinholes, they lead back to the Toshiba UART chip or directly to the legacy keyboard controller pins of the AMD Elan SC300.
+
+
+
 License
 Mido is released under the terms of the MIT license.
 

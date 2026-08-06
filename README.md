@@ -5,6 +5,8 @@ another very cool project
 https://chrisdevblog.com/2026/06/08/running-dos-on-behringers-ddx3216-using-a-diy-x86-bios/
 https://github.com/xn--nding-jua/DDX3216   This dude is totally worth checking out what he is doing great youtube channels also Trekkie also I think, he has great x32 stuff he is doing too.
 
+#THESE ARE JUST NOTES CURRENTLY!!!
+Nothing here is confirmed this is just being used to make notes on thoughts on the DDX3216 architeecture and layout etc.. there is likely a bunch of incorrect information and assumptions in here. 
 
 
 ##THIS IS WRONG

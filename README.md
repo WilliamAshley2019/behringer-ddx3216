@@ -668,7 +668,13 @@ and it makes sense they would want to use a system that didn't require them to o
 especially with modifiable sourcecode I thought I would post up ROMDOS as it is possible something like an embedded DOS system was used that was small and compact. due to the read
 and ram limits on the ddx3216. 
 
+```
+ROM-DOS Different From Standard MS-DOS?FeatureStandard MS-DOSDatalight ROM-DOSExecution PathMust be loaded into RAM to execute.
+Executes directly inside the ROM/Flash chip (XIP - Execute in Place).System FootprintLarge; fixed core components.Ultra-lightweight (as little as 54KB ROM / 10KB RAM).CustomizabilityFixed
+monolithic binary files.Features a BUILD Utility to remove unused drivers and optimize space.Storage ArchitectureLegacy FAT16 limitations.Native FAT32, LBA, and Long File Name (LFN) kernel
+support.Network CapabilityRequires heavy external layers.Includes a tiny, native TCP/IP socket stack.
 
+```
 
 
 

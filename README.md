@@ -134,8 +134,10 @@ Bus & Ribbon DiagnosticsFDR / CLBA FDR: Fader / Calibration Fader motor and wipe
 RIBON TEST: Ribbon interconnect continuity and control voltage sensing between the mainboard and sub-boards.
 Summary of Critical Errors Detected in DataSubsystemStatus
 CodeDescriptionDirect Processing LinesDP1LA -
- DP4LA ERRLine Amp / Channel driver fault on mainboard channels 1–4.Clock/Sync41KZERRClock system failing to lock at standard sampling rate.Output StageERR ERR ERR ERR
-ERROutput Routing Engine / Headphones (HPN) communication failure.Comm BusDPCMUIAINERRInternal SPI/I2C/Parallel bus communication timeout between control board and mainboard.
+ DP4LA ERRLine Amp / Channel driver fault on mainboard channels 1–4.Clock/Sync41KZERRClock system failing to lock at standard sampling rate.Output Stage
+ERR ERR ERR ERR
+ERROutput Routing Engine / Headphones (HPN) communication failure.Comm BusDPCMUIAINERRInternal SPI/I2C/Parallel bus communication timeout between control
+board and mainboard.
 ```
 
 ```

@@ -661,6 +661,8 @@ The unpopulated 5-pin DIN becomes a fully active keyboard port, allowing you to 
 ###More info on freedos or alternative dos embedding types.  
 Datalight ROM-DOS is an MS-DOS compatible operating system engineered from the ground up specifically for embedded hardware developers. Introduced by Datalight, Inc. in 1989, it gained massive popularity in the industrial computing and original equipment manufacturer (OEM) space because it bypassed the licensing limits of Microsoft and stripped away unnecessary desktop bloat. https://archive.org/details/datalite-rom-dos-5.0
 
+https://archive.org/details/datalite-serial-protocol-dx-3200_6
+
 NOTE There are many versions of DOS its not curretly known the specific version used in the ddx3216 development / prototyping that it was designed to use we can guess it was not MSDOS
 and it makes sense they would want to use a system that didn't require them to obtain a license. However I think Chris's FREEDOS might be an awsome gateway to building the custom os
 especially with modifiable sourcecode I thought I would post up ROMDOS as it is possible something like an embedded DOS system was used that was small and compact. due to the read

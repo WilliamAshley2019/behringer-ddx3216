@@ -705,7 +705,7 @@ SOCKETS, a network socket API and connectivity package, is available as an optio
 So the real trick is figuring out a way to get a very similar package to ROM-DOS but with the benefits of FREEDOS being opensource. Freedos is a little broader in that it isnot as slim
 profiled for the limited hardware operations in a much more restricted system operating method of direct operations. It might be able to be adapted as such but might require a bit of rewriting of freedos itself to be more streamlined and configurable, as ROM-DOS is specifically designed for embedded systems and eprom type load structures, while freedos seems to be intended as a holistic os for "computer systems" with standized periphrials.
 
-
+https://ftp.emacinc.com/Tech_Info/ROMDOS/ROM-DOS_Users_Guide.pdf
 
 
 License

@@ -702,7 +702,8 @@ ROM-DOS (sometimes called Datalight DOS[38]) was introduced in 1989 as an MS-DOS
 options allowing compatibility with specific versions of MS-DOS (e.g., DOS 5.01). ROM-DOS 7.1 added support for FAT32 and long file names. ROM-DOS includes a compact TCP/IP stack;[40] and 
 SOCKETS, a network socket API and connectivity package, is available as an optional add-on for ROM-DOS.[40][41] The SDK comes with Borland C/C++ and Turbo Assembler.[42]
 
-So the real trick is figuring out a way to get a very similar package to ROM-DOS but with the benefits of FREEDOS being opensource. 
+So the real trick is figuring out a way to get a very similar package to ROM-DOS but with the benefits of FREEDOS being opensource. Freedos is a little broader in that it isnot as slim
+profiled for the limited hardware operations in a much more restricted system operating method of direct operations. It might be able to be adapted as such but might require a bit of rewriting of freedos itself to be more streamlined and configurable. 
 
 
 

@@ -656,8 +656,21 @@ How it traces out: If you follow the traces from those 5 unpopulated pinholes, t
 This is why the freedos project serves as an interesting jumping off point for making a custom operating system that contains both the early test prototyping capabilities and the mixer eprom
 firmware.
 The unpopulated 5-pin DIN becomes a fully active keyboard port, allowing you to plug in a vintage keyboard and type at a DOS prompt on the mixer's built-in LCD screen.Populating the Intel 82078 section would allow you to plug in a standard 3.5" floppy drive (or a modern USB floppy emulator like a Gotek / N-Drive) and read standard floppy disks.
-More info on freedos or alternative dos embedding types.  
-Datalight ROM-DOS is an MS-DOS compatible operating system engineered from the ground up specifically for embedded hardware developers. Introduced by Datalight, Inc. in 1989, it gained massive popularity in the industrial computing and original equipment manufacturer (OEM) space because it bypassed the licensing limits of Microsoft and stripped away unnecessary desktop bloat.
+
+
+###More info on freedos or alternative dos embedding types.  
+Datalight ROM-DOS is an MS-DOS compatible operating system engineered from the ground up specifically for embedded hardware developers. Introduced by Datalight, Inc. in 1989, it gained massive popularity in the industrial computing and original equipment manufacturer (OEM) space because it bypassed the licensing limits of Microsoft and stripped away unnecessary desktop bloat. https://www.embeddedtechnology.com/doc/rom-dos-622-0001
+
+
+
+
+
+
+
+
+
+
+
 License
 Mido is released under the terms of the MIT license.
 

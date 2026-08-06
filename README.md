@@ -577,7 +577,7 @@ https://github.com/mido/mido/
 
 
 ##The Mystery Floppy Drive section
-I thought I would post some information on the floppy drive section that is unpopulated and maybe transfer it from here to a seperate .md once I have enough info prepared to make a write up on that section.
+I thought I would post some information on the floppy drive section that is unpopulated and maybe transfer it from here to a seperate .md once I have enough info prepared to make a write up on that section.   uring development in the late 1990s and early 2000s, Behringer engineers originally planned for the mixer to save snapshots, presets, and firmware updates using a traditional 3.5" internal floppy disk drive hooked up to that unpopulated 34-pin ribbon connector and the Intel 82078 FDC spot. The PMCIA flash was opted for because CompactFlash/IDE adapter protocol natively built into the AMD Elan SC300 chip.
 
 ``
 The Intel 82078 is a CHMOS single-chip Floppy Disk Controller (FDC) introduced in the 1990s to manage data transfers between a computer system and floppy disk drives. 

@@ -687,7 +687,22 @@ Requires heavy external layers.                     Includes a tiny, native TCP/
 ```
 
  ROM-DOS features an RXE conversion tool. It alters your compiled C or Assembly binaries so that the CPU executes code blocks directly from the EPROM physical memory addresses, saving your precious system RAM purely for active data processing and variable storage.
+ROM-DOS
+ROM-DOS
+Developer	Datalight, Tuxera
+OS family	DOS
+Source model	Closed-source
+Initial release	1989; 37 years ago
+Marketing target	Embedded systems
+Available in	English
+Supported platforms	x86
+License	Proprietary
+Official website	tuxera.com/products/rom-dos/
+ROM-DOS (sometimes called Datalight DOS[38]) was introduced in 1989 as an MS-DOS compatible operating system designed for embedded systems.[39] It includes backward compatibility build 
+options allowing compatibility with specific versions of MS-DOS (e.g., DOS 5.01). ROM-DOS 7.1 added support for FAT32 and long file names. ROM-DOS includes a compact TCP/IP stack;[40] and 
+SOCKETS, a network socket API and connectivity package, is available as an optional add-on for ROM-DOS.[40][41] The SDK comes with Borland C/C++ and Turbo Assembler.[42]
 
+So the real trick is figuring out a way to get a very similar package to ROM-DOS but with the benefits of FREEDOS being opensource. 
 
 
 

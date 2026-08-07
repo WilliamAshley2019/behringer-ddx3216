@@ -224,19 +224,21 @@ namespace DDX3216
     //   vv        data file version (1..0x7F)
     //   hh ll     total number of 1000-byte blocks (hh*128+ll)
     //   hh ll     this block's index (0 = first)
-    //   dd..      byte count + 7-bytes-of-data/1-byte-of-high-bits groups
-    //             (payload is packed 8 bytes -> 7 "8-bit" bytes stay under
-    //             the 7-bit-clean SysEx requirement -- classic MIDI file-dump
-    //             encoding, same idea as the standard MIDI Sample Dump
-    //             Standard)
+    //   dd        byte count of the ENCODED payload that follows (always a
+    //             multiple of 8 -- see the 7/8 packing note below)
+    //   ..        encoded payload
     //   cc        checksum = NOT(sum of all preceding data bytes) & 0x7F
     //
-    // NOT YET IMPLEMENTED here -- this namespace documents the shape from
-    // the PDF (cross-checked against the vendor tool's own "Checksum error"
-    // string and its SYS_EX_BLOCKSIZE constant) but the block-transfer state
-    // machine (multi-frame request/ack/retry) still needs writing. Do that
-    // as its own class (e.g. BulkDumpSession) once basic fader control is
-    // solid -- it's a meaningfully bigger, stateful piece of work.
+    // Request-frame body (request bit set): just the block index (hh ll),
+    // or a C-string filename for the file-list/single-file functions.
+    //
+    // 7/8 packing: SysEx data bytes must be 7-bit clean (top bit clear), so
+    // 7 arbitrary 8-bit payload bytes are sent as 8 encoded bytes: encoded
+    // bytes 0-6 carry the low 7 bits of payload bytes 0-6, and encoded byte 7
+    // carries their 7 high bits packed together (bit i = high bit of payload
+    // byte i). This is the same scheme as the standard MIDI Sample Dump
+    // Standard. It's why the PDF says "byte count is always modulo 8" --
+    // that's the ENCODED count, 8 bytes per 7 real payload bytes.
     namespace BulkDump
     {
         constexpr uint8_t kFuncDumpCurrentSettings    = 0x50;
@@ -246,7 +248,7 @@ namespace DDX3216
         constexpr uint8_t kFuncDumpFile               = 0x52;
         constexpr uint8_t kFuncRequestFile            = 0x12;
 
-        constexpr int kBlockSize = 1000; // bytes of payload per block, per the PDF
+        constexpr int kBlockPayloadSize = 1000; // decoded bytes of payload per block, per the PDF
 
         // checksum = NOT(sum of the preceding data bytes) & 0x7F
         inline uint8_t computeChecksum (const uint8_t* data, size_t length) noexcept
@@ -255,6 +257,177 @@ namespace DDX3216
             for (size_t i = 0; i < length; ++i)
                 sum += data[i];
             return (uint8_t) ((~sum) & 0x7F);
+        }
+
+        // Encode up to 7 raw bytes into 8 7-bit-clean bytes. `in` must have
+        // inLength <= 7 valid bytes; `out` must have room for 8 bytes.
+        // Returns the number of encoded bytes written (always 8, even for a
+        // short final group -- pad `in` with zeros for a partial group and
+        // track the real payload length separately).
+        inline int encode7Bit (const uint8_t* in, int inLength, uint8_t* out) noexcept
+        {
+            jassert (inLength >= 0 && inLength <= 7);
+            uint8_t highBits = 0;
+            for (int i = 0; i < 7; ++i)
+            {
+                uint8_t b = (i < inLength) ? in[i] : 0;
+                out[i] = b & 0x7F;
+                if (b & 0x80)
+                    highBits |= (uint8_t) (1 << i);
+            }
+            out[7] = highBits;
+            return 8;
+        }
+
+        // Decode 8 7-bit-clean bytes back into 7 raw bytes.
+        inline void decode7Bit (const uint8_t* in, uint8_t* out) noexcept
+        {
+            uint8_t highBits = in[7];
+            for (int i = 0; i < 7; ++i)
+                out[i] = (uint8_t) ((in[i] & 0x7F) | (((highBits >> i) & 1) << 7));
+        }
+
+        // Encode an arbitrary-length buffer using the 7/8 scheme above.
+        inline std::vector<uint8_t> encodeBuffer (const std::vector<uint8_t>& data)
+        {
+            std::vector<uint8_t> encoded;
+            encoded.reserve ((data.size() / 7 + 1) * 8);
+            size_t i = 0;
+            while (i < data.size())
+            {
+                int chunk = (int) std::min<size_t> (7, data.size() - i);
+                uint8_t out[8];
+                encode7Bit (data.data() + i, chunk, out);
+                encoded.insert (encoded.end(), out, out + 8);
+                i += (size_t) chunk;
+            }
+            return encoded;
+        }
+
+        // Decode a 7/8-packed buffer. decodedLength is the real (unpadded)
+        // payload length, since the last group may be padded with zeros.
+        inline std::vector<uint8_t> decodeBuffer (const std::vector<uint8_t>& encoded, size_t decodedLength)
+        {
+            std::vector<uint8_t> decoded;
+            decoded.reserve (decodedLength);
+            for (size_t i = 0; i + 8 <= encoded.size() && decoded.size() < decodedLength; i += 8)
+            {
+                uint8_t out[7];
+                decode7Bit (encoded.data() + i, out);
+                size_t remaining = decodedLength - decoded.size();
+                decoded.insert (decoded.end(), out, out + std::min<size_t> (7, remaining));
+            }
+            return decoded;
+        }
+
+        // A single parsed data block (function 0x50/0x51/0x52 response, i.e.
+        // request bit == 0).
+        struct DataBlock
+        {
+            uint8_t version = 1;
+            int totalBlocks = 0;
+            int blockIndex = 0;
+            std::vector<uint8_t> decodedPayload;
+            bool checksumOk = false;
+        };
+
+        // Build a "request block N" frame for the settings/current-config
+        // path (function 0x10). filename-based file requests (0x11/0x12)
+        // aren't built here yet -- add a buildFileRequest() alongside this
+        // when the file-list/single-file paths are wired up.
+        inline juce::MidiMessage buildRequestBlock (uint8_t requestFunction, int blockIndex,
+                                                     uint8_t deviceByte = kIgnoreApparatusAndChannel)
+        {
+            std::vector<uint8_t> body;
+            body.push_back (kBehringerManufacturerId[0]);
+            body.push_back (kBehringerManufacturerId[1]);
+            body.push_back (kBehringerManufacturerId[2]);
+            body.push_back (deviceByte);
+            body.push_back (kApparatusId);
+            body.push_back (requestFunction);
+            body.push_back ((uint8_t) ((blockIndex >> 7) & 0x7F)); // hh
+            body.push_back ((uint8_t) (blockIndex & 0x7F));        // ll
+            return juce::MidiMessage::createSysExMessage (body.data(), (int) body.size());
+        }
+
+        // Build a data-frame carrying one block of an outgoing (PC -> desk)
+        // transfer.
+        inline juce::MidiMessage buildDataBlock (uint8_t dumpFunction, uint8_t version,
+                                                  int totalBlocks, int blockIndex,
+                                                  const std::vector<uint8_t>& rawPayload,
+                                                  uint8_t deviceByte = kIgnoreApparatusAndChannel)
+        {
+            auto encodedPayload = encodeBuffer (rawPayload);
+            jassert (encodedPayload.size() % 8 == 0);
+
+            std::vector<uint8_t> data; // everything the checksum covers (after the function byte)
+            data.push_back (version);
+            data.push_back ((uint8_t) ((totalBlocks >> 7) & 0x7F));
+            data.push_back ((uint8_t) (totalBlocks & 0x7F));
+            data.push_back ((uint8_t) ((blockIndex >> 7) & 0x7F));
+            data.push_back ((uint8_t) (blockIndex & 0x7F));
+            data.push_back ((uint8_t) (encodedPayload.size() & 0x7F)); // byte count, mod 8 per the PDF
+            data.insert (data.end(), encodedPayload.begin(), encodedPayload.end());
+            data.push_back (computeChecksum (data.data(), data.size()));
+
+            std::vector<uint8_t> body;
+            body.push_back (kBehringerManufacturerId[0]);
+            body.push_back (kBehringerManufacturerId[1]);
+            body.push_back (kBehringerManufacturerId[2]);
+            body.push_back (deviceByte);
+            body.push_back (kApparatusId);
+            body.push_back (dumpFunction);
+            body.insert (body.end(), data.begin(), data.end());
+
+            return juce::MidiMessage::createSysExMessage (body.data(), (int) body.size());
+        }
+
+        // Parse an incoming data-frame (request bit == 0) for any of the
+        // dump functions. Returns std::nullopt if the message isn't a
+        // recognised DDX3216 bulk-dump data frame.
+        inline std::optional<DataBlock> parseDataBlock (const juce::MidiMessage& message)
+        {
+            if (! message.isSysEx())
+                return std::nullopt;
+
+            auto* d = message.getSysExData();
+            auto size = message.getSysExDataSize();
+
+            // 00 20 32 <ic> 0B <func> <vv> <hh> <ll> <hh> <ll> <dd> ...payload... <cc>
+            if (size < 12)
+                return std::nullopt;
+
+            if (d[0] != kBehringerManufacturerId[0] || d[1] != kBehringerManufacturerId[1]
+                || d[2] != kBehringerManufacturerId[2] || d[4] != kApparatusId)
+                return std::nullopt;
+
+            auto func = d[5];
+            if (func != kFuncDumpCurrentSettings && func != kFuncDumpFileList && func != kFuncDumpFile)
+                return std::nullopt;
+
+            DataBlock block;
+            block.version = d[6];
+            block.totalBlocks = (d[7] << 7) | d[8];
+            block.blockIndex  = (d[9] << 7) | d[10];
+            auto encodedByteCount = d[11];
+
+            auto payloadStart = 12;
+            if (size < payloadStart + encodedByteCount + 1) // +1 for checksum byte
+                return std::nullopt;
+
+            std::vector<uint8_t> checksummedData (d + 6, d + payloadStart + encodedByteCount);
+            auto expectedChecksum = computeChecksum (checksummedData.data(), checksummedData.size());
+            auto actualChecksum = d[payloadStart + encodedByteCount];
+            block.checksumOk = (expectedChecksum == actualChecksum);
+
+            std::vector<uint8_t> encodedPayload (d + payloadStart, d + payloadStart + encodedByteCount);
+            // Real (unpadded) decoded length isn't carried in the frame itself for
+            // a partial final block -- callers that know the true file size should
+            // trim block.decodedPayload themselves; this gives the full decode of
+            // whatever was sent, including any zero-padding on the last group.
+            block.decodedPayload = decodeBuffer (encodedPayload, (encodedPayload.size() / 8) * 7);
+
+            return block;
         }
     }
 }

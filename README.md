@@ -766,3 +766,12 @@ Mido is released under the terms of the MIT license.
 
 Questions and suggestions
 For questions and proposals which may not fit into issues or pull requests, we recommend to ask and discuss in the Discussions section.
+
+
+
+
+
+
+
+
+In regard to the FL Studio Script, it does not magically allow sysex to work in FL Studio this is a concept which isn't applicable as of yet in fl studio. I am just testing this new script currently. The pan and slider works as with the last with automapped to the proper mixer slider. 

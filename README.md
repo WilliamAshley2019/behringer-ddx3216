@@ -199,7 +199,11 @@ IPT91Channel Pair Addressing for Direct Hardware Routing SwitchesPI OPTS:CNETPUP
 
 ```"FX type" parameter (0–26):
 
-0 Bypass · 1 Cathedral · 2 Plate · 3 Small Hall · 4 Room · 5 Concert · 6 Stage · 7 Spring Reverb · 8 Gated Reverb · 9 Stereo Delay · 10 Echo · 11 Stereo Chorus · 12 Stereo Flanger · 13 Stereo Phaser · 14 Pitch Shifter · 15 Delay (Mono) · 16 Flanger (Mono) · 17 Chorus (Mono) · 18 Phaser (Mono) · 19 Tremolo · 20 Autopan · 21 Enhancer · 22 Graphic EQ · 23 LFO Filter · 24 Auto Filter · 25 LowFi · 26 Ring Modulator
+0 Bypass · 1 Cathedral · 2 Plate · 3 Small Hall · 4 Room · 5 Concert · 6 Stage · 7 Spring Reverb · 8 Gated Reverb
+· 9 Stereo Delay · 10 Echo · 11 Stereo Chorus · 12 Stereo Flanger · 13 Stereo Phaser · 14 Pitch Shifter
+ · 15 Delay (Mono) · 16 Flanger (Mono) · 17 Chorus (Mono) · 18 Phaser (Mono) · 19 Tremolo · 20 Autopan
+· 21 Enhancer · 22 Graphic EQ · 23 LFO Filter · 24 Auto Filter · 25 LowFi · 26 Ring Modulator
+
 
 Each one exposes up to 8 of its own parameters (91–98), specific to that algorithm — e.g. Cathedral has Decay/Damping/Bass Multiply/Reverb Mod/PreDelay/Density/Diffusion/Hi-Shv Damp, while Ring Modulator has completely different ones.
 

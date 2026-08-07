@@ -45,7 +45,7 @@ import ui
 
 import ddx3216_protocol as proto
 
-CHANNEL_OFFSET = 0       # DDX3216 channel 1 (index 0) -> FL mixer track 0 + this
+CHANNEL_OFFSET = 1       # DDX3216 channel 1 (index 0) -> FL mixer track 0 + this
 NUM_CHANNELS = 32
 DEVICE_MIDI_CHANNEL = 2  # matches this project's sniffed hardware traffic;
                           # set to None for omni if your unit responds to that instead

@@ -708,6 +708,10 @@ profiled for the limited hardware operations in a much more restricted system op
 https://ftp.emacinc.com/Tech_Info/ROMDOS/ROM-DOS_Users_Guide.pdf
 https://device.report/m/07c51c30fc0e3653fb5ad1077f8e955f0611b5afc3269f6778c0bbcb67aa91c0.pdf
 
+
+
+It regard to an AT style keyboard... it has me curious if something like https://www.youtube.com/watch?v=1YBWNP5MvdU can be modified for use with the ddx3216??
+
 License
 Mido is released under the terms of the MIT license.
 

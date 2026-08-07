@@ -774,4 +774,6 @@ For questions and proposals which may not fit into issues or pull requests, we r
 
 
 
-In regard to the FL Studio Script, it does not magically allow sysex to work in FL Studio this is a concept which isn't applicable as of yet in fl studio. I am just testing this new script currently. The pan and slider works as with the last with automapped to the proper mixer slider master and main does nothing  need to map this specific mamain slider to the master channel 0 but first must find what is called... this was a common issue with the previous script that was fixed need to fx it on this one also... . 
+In regard to the FL Studio Script, it does not magically allow sysex to work in FL Studio this is a concept which isn't applicable as of yet in fl studio. I am just testing this new script currently. The pan and slider works as with the last with automapped to the proper mixer slider master and main does nothing  need to map this specific mamain slider to the master channel 0 but first must find what is called... this was a common issue with the previous script that was fixed need to fx it on this one also... .   still buggy.
+
+I currently am using transmit 2

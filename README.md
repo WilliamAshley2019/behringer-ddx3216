@@ -97,16 +97,22 @@ So: IC7 = QuickLogic QL3004-1PL84C, functioning as the ISA-to-SHARC bus bridge, 
 ```
 ```
 SHARC DSPs of this era are programmed in bare-metal C/assembly via Analog Devices' VisualDSP++, compiled once into a fixed firmware image
+
 There's no dynamic loading of effect "modules" happening live.
 
 All 27 algorithms are compiled in as part of the DSP firmware from the start.
 
-Selecting "FX type" via SysEx doesn't load new code — it's an index that tells already-resident code which fixed processing path to run, and the other parameter bytes just feed
+Selecting "FX type" via SysEx doesn't load new code — it's an index that tells already-resident code which fixed processing path to run,
+and the other parameter bytes just feed
+
  coefficients (decay time, Q, gain, etc.) into whichever algorithm is currently active.
 
 That's the standard architecture for a fixed-function effects box like this, not a plugin-style loadable system — much simpler and more deterministic, which matters a lot for real-time audio.
 
-The per-channel EQ/gate/compressor/delay isn't part of that FX-algorithm list at all — it's a fixed, always-running processing chain present on every one of the 32 channels simultaneously (4-band EQ + high-pass + gate + compressor + delay, all with their own parameters, already in DDX3216Protocol.h's Param namespace).
+The per-channel EQ/gate/compressor/delay isn't part of that FX-algorithm list at all — it's a fixed, always-running
+processing chain present on every one of the 32 channels simultaneously (4-band EQ + high-pass + gate + compressor + delay,
+ all with their own parameters, already in DDX3216Protocol.h's Param namespace).
+
 
 The 27-algorithm list is specifically the shared "FX return" units "FX 1–4" send/return references in the protocol effects-loop sends.
 

@@ -2,9 +2,7 @@
 
 <JUCERPROJECT id="Ddx3216Ctrl001" name="DDX3216Controller" projectType="guiapp"
               version="0.1.0" bundleIdentifier="music.williamashley.ddx3216controller"
-              displaySplashScreen="0" jucerFormatVersion="1" companyName="William Ashley Music"
-              companyCopyright="William Ashley" companyWebsite="https://williamashley.music"
-              companyEmail="contact@williamashley.music">
+              displaySplashScreen="0" jucerFormatVersion="1" companyName="William Ashley Music">
   <MAINGROUP id="MainGroup" name="DDX3216Controller">
     <GROUP id="SourceGroup" name="Source">
       <FILE id="f001" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
@@ -20,6 +18,9 @@
             file="Source/ChannelStripComponent.h"/>
       <FILE id="f010" name="ChannelStripComponent.cpp" compile="1" resource="0"
             file="Source/ChannelStripComponent.cpp"/>
+      <FILE id="f011" name="SerialPortManager.h" compile="0" resource="0"
+            file="Source/SerialPortManager.h"/>
+      <FILE id="f012" name="BulkDumpSession.h" compile="0" resource="0" file="Source/BulkDumpSession.h"/>
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>

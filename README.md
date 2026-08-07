@@ -52,7 +52,26 @@ halves of the DSP data bus (DSPDATA) to/from the SDRAM and host interface.Power 
 
  C1 100nF, C17, C3) to power the 3.3V I/O cores of the ADSP-21065L SHARCs, CPLD, and 74LV-series logic.
 Board Interconnection Architecture                
-    
+
+
+Some thing like 
+CS-1,2,3,4 — four independent chip-select outputs, one per SHARC. Directly confirms IC7 individually addresses each DSP.
+
+BR_1,2,3,4 — four independent bus-request lines, again one per DSP, alongside HBR/HBG (Host Bus Request/Grant — genuine SHARC host-port signal names). This is the arbitration logic
+described in the schematic OCR, now confirmed pin-by-pin.
+
+SA (address lines), IOR, IOW, IOCHRDY, IOCS16, AEN — this is textbook, unmistakable ISA-bus nomenclature. AEN (Address Enable) and IOCS16 (16-bit I/O chip select) in particular are very
+specific, real ISA signals that wouldn't show up by coincidence.
+
+OERDSPL/H, LEWDSPH/L, OEWDSP — output-enable and latch-enable pairs, high/low byte, feeding the 74LV245-family transceivers we already found on Sheet 1. This is the byte-lane logic
+bridging the host's narrower bus to the DSPs' wider one.
+
+CLK30_0 plus the BITCLK/LRCLK pairs — confirms IC7 itself touches clock distribution, exactly matching the DCX2496 precedent (QuickLogic QL3004 used there specifically for clock
+generation).
+
+
+So: IC7 = QuickLogic QL3004-1PL84C, functioning as the ISA-to-SHARC bus bridge, per-DSP bus arbiter, and clock distribution hub.  
+
     ```           +-----------------------------------+
                   |      DSP CONN / Host CPU (X5)     |
                   +-----------------+-----------------+

@@ -26,12 +26,17 @@
     Module address space (CONFIRMED vs INFERRED):
 
         0-31    Channels 1-32                          [CONFIRMED - existing code paths use this]
-        32-47   Bus 1-16                                [INFERRED - contiguous after channels, matches
-                                                          the PDF's section ordering, NOT yet verified
-                                                          against a real desk]
-        48-51   Aux master 1-4                          [INFERRED]
-        52-55   FX send master 1-4                      [INFERRED]
-        56-63   FX return 1-8                           [INFERRED]
+        32-47   Bus 1-16                                [MEDIUM-HIGH - contiguous after channels,
+                                                          matches the PDF's section ordering AND
+                                                          independently cross-corroborated by an
+                                                          unrelated third-party project (a web-based
+                                                          DDX3216 controller UI) using identical
+                                                          ranges. Two independent inferences agreeing
+                                                          is good evidence, still short of a direct
+                                                          hardware-traffic capture]
+        48-51   Aux master 1-4                          [MEDIUM-HIGH, see above]
+        52-55   FX send master 1-4                      [MEDIUM-HIGH, see above]
+        56-63   FX return 1-8                           [MEDIUM-HIGH, see above]
         64-65   Master L / Master R                     [CONFIRMED - matches the working Node.js
                                                           implementation in this project, which sends
                                                           module 64 for its single "master" channel and
@@ -49,6 +54,18 @@ namespace DDX3216
     constexpr uint8_t kApparatusId       = 0x0B;   // DDX3216
     constexpr uint8_t kFunctionParamChange = 0x20; // direct parameter change
     constexpr uint8_t kFunctionChannelAttenuation = 0x22; // attenuates all channels in the same mute group at once
+
+    // Newly cross-referenced from a second SysEx doc extraction, not
+    // previously in this file. Named here for completeness but NOT wired
+    // into any encode/decode logic yet -- payload formats are unconfirmed.
+    constexpr uint8_t kFunctionConnectionTest = 0x00; // r=1 -> 0x40 (matches the "ping" already used elsewhere)
+    constexpr uint8_t kFunctionMeterData      = 0x04; // genuinely new capability -- level/VU meter data.
+                                                        // Could drive real-time meters in the app once the
+                                                        // payload format is worked out; worth investigating.
+    constexpr uint8_t kFunctionMemoryDump     = 0x0F; // distinct from the 0x50/0x51/0x52 file-category dump
+                                                        // family above -- appears to be a lower-level raw memory
+                                                        // access function. Possibly relevant to firmware work.
+                                                        // Payload format unconfirmed.
     constexpr uint8_t kIgnoreApparatusAndChannel = 0x60; // omni
 
     // Build the "ic" device/channel byte. midiChannel1to16 == nullopt means
@@ -248,6 +265,23 @@ namespace DDX3216
         constexpr uint8_t kFuncDumpFile               = 0x52;
         constexpr uint8_t kFuncRequestFile            = 0x12;
 
+        // File-category ("what") byte, sent right after the function code in
+        // every request/dump header per the official doc's byte-7 field --
+        // BUG FIX: earlier versions of this file omitted this byte entirely,
+        // which would have made every bulk-dump frame malformed. The doc
+        // names these symbolically (F_ALL, F_SETUP, F_CHANL, F_EQL, F_DYNL,
+        // F_FXL, F_AUT, F_SNAPS) but never gives their actual numeric values
+        // -- those are NOT yet known/confirmed. Callers must supply the
+        // right byte once it's been determined (e.g. by sniffing a real
+        // File Exchange session, or trial-and-error against the console).
+        namespace WhatByte
+        {
+            // Placeholder names only -- values are UNKNOWN. Do not trust 0x00
+            // as a real default; it's just an explicit placeholder so this
+            // compiles, not a documented value.
+            constexpr uint8_t kUnknown = 0x00;
+        }
+
         constexpr int kBlockPayloadSize = 1000; // decoded bytes of payload per block, per the PDF
 
         // checksum = NOT(sum of the preceding data bytes) & 0x7F
@@ -324,6 +358,7 @@ namespace DDX3216
         // request bit == 0).
         struct DataBlock
         {
+            uint8_t whatByte = 0;
             uint8_t version = 1;
             int totalBlocks = 0;
             int blockIndex = 0;
@@ -335,7 +370,11 @@ namespace DDX3216
         // path (function 0x10). filename-based file requests (0x11/0x12)
         // aren't built here yet -- add a buildFileRequest() alongside this
         // when the file-list/single-file paths are wired up.
-        inline juce::MidiMessage buildRequestBlock (uint8_t requestFunction, int blockIndex,
+        //
+        // whatByte: the file-category selector (F_ALL/F_EQL/etc. -- see
+        // WhatByte namespace above). BUG FIX: earlier versions of this
+        // function omitted this required byte entirely.
+        inline juce::MidiMessage buildRequestBlock (uint8_t requestFunction, uint8_t whatByte, int blockIndex,
                                                      uint8_t deviceByte = kIgnoreApparatusAndChannel)
         {
             std::vector<uint8_t> body;
@@ -345,6 +384,7 @@ namespace DDX3216
             body.push_back (deviceByte);
             body.push_back (kApparatusId);
             body.push_back (requestFunction);
+            body.push_back (whatByte);
             body.push_back ((uint8_t) ((blockIndex >> 7) & 0x7F)); // hh
             body.push_back ((uint8_t) (blockIndex & 0x7F));        // ll
             return juce::MidiMessage::createSysExMessage (body.data(), (int) body.size());
@@ -352,7 +392,7 @@ namespace DDX3216
 
         // Build a data-frame carrying one block of an outgoing (PC -> desk)
         // transfer.
-        inline juce::MidiMessage buildDataBlock (uint8_t dumpFunction, uint8_t version,
+        inline juce::MidiMessage buildDataBlock (uint8_t dumpFunction, uint8_t whatByte, uint8_t version,
                                                   int totalBlocks, int blockIndex,
                                                   const std::vector<uint8_t>& rawPayload,
                                                   uint8_t deviceByte = kIgnoreApparatusAndChannel)
@@ -361,6 +401,7 @@ namespace DDX3216
             jassert (encodedPayload.size() % 8 == 0);
 
             std::vector<uint8_t> data; // everything the checksum covers (after the function byte)
+            data.push_back (whatByte);
             data.push_back (version);
             data.push_back ((uint8_t) ((totalBlocks >> 7) & 0x7F));
             data.push_back ((uint8_t) (totalBlocks & 0x7F));
@@ -393,8 +434,8 @@ namespace DDX3216
             auto* d = message.getSysExData();
             auto size = message.getSysExDataSize();
 
-            // 00 20 32 <ic> 0B <func> <vv> <hh> <ll> <hh> <ll> <dd> ...payload... <cc>
-            if (size < 12)
+            // 00 20 32 <ic> 0B <func> <ww> <vv> <hh> <ll> <hh> <ll> <dd> ...payload... <cc>
+            if (size < 13)
                 return std::nullopt;
 
             if (d[0] != kBehringerManufacturerId[0] || d[1] != kBehringerManufacturerId[1]
@@ -406,12 +447,13 @@ namespace DDX3216
                 return std::nullopt;
 
             DataBlock block;
-            block.version = d[6];
-            block.totalBlocks = (d[7] << 7) | d[8];
-            block.blockIndex  = (d[9] << 7) | d[10];
-            auto encodedByteCount = d[11];
+            block.whatByte = d[6];
+            block.version = d[7];
+            block.totalBlocks = (d[8] << 7) | d[9];
+            block.blockIndex  = (d[10] << 7) | d[11];
+            auto encodedByteCount = d[12];
 
-            auto payloadStart = 12;
+            auto payloadStart = 13;
             if (size < payloadStart + encodedByteCount + 1) // +1 for checksum byte
                 return std::nullopt;
 

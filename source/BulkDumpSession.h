@@ -44,11 +44,15 @@ public:
 
     // ---- Download: request a file/settings blob FROM the desk ----
     // requestFunction is one of DDX3216::BulkDump::kFuncRequest*.
-    void startDownload (uint8_t requestFunction, ProgressCallback onProgress, CompletionCallback onComplete)
+    // whatByte selects the file category (F_ALL/F_EQL/etc.) -- see
+    // DDX3216::BulkDump::WhatByte. Its real numeric values aren't confirmed
+    // yet, so callers currently have to supply a best guess.
+    void startDownload (uint8_t requestFunction, uint8_t whatByte, ProgressCallback onProgress, CompletionCallback onComplete)
     {
         reset();
         direction = Direction::download;
         function = requestFunction;
+        whatByte_ = whatByte;
         progressCb = std::move (onProgress);
         completeCb = std::move (onComplete);
         status = Status::running;
@@ -58,12 +62,13 @@ public:
 
     // ---- Upload: send a file/settings blob TO the desk ----
     // dumpFunction is one of DDX3216::BulkDump::kFuncDump*.
-    void startUpload (uint8_t dumpFunction, std::vector<uint8_t> dataToSend,
+    void startUpload (uint8_t dumpFunction, uint8_t whatByte, std::vector<uint8_t> dataToSend,
                        ProgressCallback onProgress, CompletionCallback onComplete)
     {
         reset();
         direction = Direction::upload;
         function = dumpFunction;
+        whatByte_ = whatByte;
         payload = std::move (dataToSend);
         progressCb = std::move (onProgress);
         completeCb = std::move (onComplete);
@@ -116,7 +121,7 @@ private:
     void requestBlock (int blockIndex)
     {
         currentBlock = blockIndex;
-        send (DDX3216::BulkDump::buildRequestBlock (function, blockIndex));
+        send (DDX3216::BulkDump::buildRequestBlock (function, whatByte_, blockIndex));
         reportProgress ("Requesting block " + juce::String (blockIndex));
         startTimer (kTimeoutMs); // reset the timeout on every request
     }
@@ -131,7 +136,7 @@ private:
         std::vector<uint8_t> chunk (payload.begin() + (long) offset,
                                      payload.begin() + (long) (offset + chunkSize));
 
-        send (DDX3216::BulkDump::buildDataBlock (function, 1, totalBlocks, blockIndex, chunk));
+        send (DDX3216::BulkDump::buildDataBlock (function, whatByte_, 1, totalBlocks, blockIndex, chunk));
         reportProgress ("Sending block " + juce::String (blockIndex) + " of " + juce::String (totalBlocks));
         startTimer (kTimeoutMs);
     }
@@ -170,23 +175,22 @@ private:
 
         auto* d = message.getSysExData();
         auto size = message.getSysExDataSize();
-        if (size < 8) return;
+        if (size < 9) return;
         if (d[0] != DDX3216::kBehringerManufacturerId[0] || d[1] != DDX3216::kBehringerManufacturerId[1]
             || d[2] != DDX3216::kBehringerManufacturerId[2] || d[4] != DDX3216::kApparatusId)
             return;
 
         auto func = d[5];
         // request-function counterpart of whichever dump function we're using
-        auto expectedRequestFunc = (uint8_t) (function - 0x40); // 0x50->0x10, 0x51->0x11 needs care; see note below
-        juce::ignoreUnused (expectedRequestFunc);
-        // NOTE: request/dump function pairing isn't a fixed arithmetic offset
-        // across all three function families in the PDF (0x50<->0x10 is -0x40,
-        // but 0x51<->0x11 and 0x52<->0x12 are also -0x40 -- so the above IS
-        // consistent for all three, kept as one line rather than a switch).
+        // (0x50<->0x10, 0x51<->0x11, 0x52<->0x12 -- all -0x40, so one line
+        // covers all three).
         if (func != (uint8_t) (function - 0x40))
             return;
+        // NOTE: not checking d[6] (whatByte) matches whatByte_ here -- the
+        // desk's ACK should echo it back, but tolerating a mismatch for now
+        // in case that assumption turns out wrong once tested on hardware.
 
-        auto requestedBlock = (d[6] << 7) | d[7];
+        auto requestedBlock = (d[7] << 7) | d[8];
 
         if (requestedBlock == currentBlock)
         {
@@ -251,6 +255,7 @@ private:
     SendFrameFn send;
     Direction direction = Direction::download;
     uint8_t function = 0;
+    uint8_t whatByte_ = 0;
     Status status = Status::idle;
 
     int currentBlock = 0;

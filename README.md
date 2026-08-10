@@ -709,8 +709,36 @@ The unpopulated 5-pin DIN becomes a fully active keyboard port, allowing you to 
 
 ###More info on freedos or alternative dos embedding types.  (Note Currently the freedos / bios method developed by Chris is likely the simplist means to approach running dos - this datalight conjecture may indeed suffer some of the same addressing issue chris encountered with MSDOS - not sure.  However
 it would be good to know what DOS was used during the development x86 native systems should be fine. It seems Beheringer may have used Borland C++ as its main
-build path. 
+build path.  This is why I still think it was romdos "ROM-DOS
+``` Quick facts ROM-DOS, Developer ...
+ROM-DOS
+Developer
+Datalight, Tuxera
+OS family
+DOS
+Source model
+Closed-source
+Initial release
+1989; 37 years ago
+Marketing target
+Embedded systems
+Available in
+English
+Supported platforms
+x86
+License
+Proprietary
+Official website
+tuxera.com/products/rom-dos/
+Close
+ROM-DOS (sometimes called Datalight DOS[38]) was introduced in 1989 as an MS-DOS compatible operating system designed for embedded systems.[39] It includes backward compatibility build options allowing compatibility with specific versions of MS-DOS (e.g., DOS 5.01). ROM-DOS 7.1 added support for FAT32 and long file names. ROM-DOS includes a compact TCP/IP stack;[40] and SOCKETS, a network socket API and connectivity package, is available as an optional add-on for ROM-DOS.[40][41] The SDK comes with Borland C/C++ and Turbo Assembler.[42]
 
+System requirements:
+
+Intel 80186 or compatible
+10 KB of RAM
+54–72 KB of ROM or disk space (depending on version)"  
+```
 Datalight ROM-DOS is an MS-DOS compatible operating system engineered from the ground up specifically for embedded hardware developers. Introduced by Datalight, Inc. in 1989, it gained massive popularity in the industrial computing and original equipment manufacturer (OEM) space because it bypassed the licensing limits of Microsoft and stripped away unnecessary desktop bloat. https://archive.org/details/datalite-rom-dos-5.0
 
 https://archive.org/details/datalite-serial-protocol-dx-3200_6

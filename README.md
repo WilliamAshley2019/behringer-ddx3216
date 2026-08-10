@@ -222,6 +222,11 @@ DSP Boot Loader Transmission: The MCU pumps the 48-bit instruction boot loader v
 Control Loop Execution: Once loaded, the SHARC executes its inner DSP processing loop, while the PLUT3022 handles asynchronous hardware switches, front-panel controls, and memory-mapped status flags.
 
 ```
+Note the current approach to actually decoding the logic is likely unorthodox to test the output - input to determine the logic there are I think 4000 gates so determining all the gates will likely be time intensive unless the testing can be automated at which point 4000 gates should not be heavily time consuming simply brute forcing state exchanges.
+Once the firmware is reverse engineered and the outputs can be determined, the logic in between based upon standards for the FPGA should be discoverable.
+
+
+
 2026-08-04
 # DDX3216 Controller
 

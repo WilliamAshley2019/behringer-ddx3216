@@ -819,3 +819,26 @@ For questions and proposals which may not fit into issues or pull requests, we r
 In regard to the FL Studio Script, it does not magically allow sysex to work in FL Studio this is a concept which isn't applicable as of yet in fl studio. I am just testing this new script currently. The pan and slider works as with the last with automapped to the proper mixer slider master and main does nothing  need to map this specific mamain slider to the master channel 0 but first must find what is called... this was a common issue with the previous script that was fixed need to fx it on this one also... .   still buggy.
 
 I currently am using transmit 2
+The LCD encoder issue..... 
+
+ The DDX3216's LCD knobs are encoders, not potentiometers. They behave differently depending on the context (EQ, FX, dynamics, etc.) and the DDX3216 sends different MIDI messages based on what mode you're in. So it makes it very difficult to map these as 6 normal midi knobs because they infact send data based upon what effects parameters within the ddx3216, but as a control surface they are a little problematic unless you make mirrored effects and control those effects with those knobs which is something to do to have a computer site fxs mirror however currently only one of the knobs acts like a normal rotary knob within the fl studio script as the sysex doesn't send regular midi information it is all parameters that are specific to the type of parameter being controlled in the ddx3216 internally.
+
+Understanding the LCD Knob Behavior
+The Problem:
+The LCD knobs are relative encoders (they send increment/decrement values, not absolute positions)
+
+They send different messages depending on what's displayed on the LCD screen
+
+Only one mode (usually FX parameters) sends standard absolute CC values
+
+The Solution:
+We need to:
+
+Track the knob's state internally (maintain a value per knob)
+
+Interpret relative encoder messages (increment/decrement)
+
+Apply the changes to the focused plugin parameter
+
+
+The 

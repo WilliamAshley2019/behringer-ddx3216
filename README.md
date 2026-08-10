@@ -731,7 +731,13 @@ Proprietary
 Official website
 tuxera.com/products/rom-dos/
 Close
-ROM-DOS (sometimes called Datalight DOS[38]) was introduced in 1989 as an MS-DOS compatible operating system designed for embedded systems.[39] It includes backward compatibility build options allowing compatibility with specific versions of MS-DOS (e.g., DOS 5.01). ROM-DOS 7.1 added support for FAT32 and long file names. ROM-DOS includes a compact TCP/IP stack;[40] and SOCKETS, a network socket API and connectivity package, is available as an optional add-on for ROM-DOS.[40][41] The SDK comes with Borland C/C++ and Turbo Assembler.[42]
+ROM-DOS (sometimes called Datalight DOS[38]) was introduced in 1989 as an MS-DOS compatible operating system designed for embedded systems.
+ It includes backward compatibility build options allowing compatibility with specific versions of MS-DOS (e.g., DOS 5.01).
+ ROM-DOS 7.1 added support for FAT32 and long file names. ROM-DOS includes a compact TCP/IP stack; and SOCKETS,
+ a network socket API and connectivity package, is available as an optional add-on for ROM-DOS.
+
+The SDK comes with Borland C/C++ and Turbo Assembler.  <---- These appaer to maybe be the specific build tools used to build out the firmware and
+firmware backup software.
 
 System requirements:
 

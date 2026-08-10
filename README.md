@@ -707,7 +707,10 @@ firmware.
 The unpopulated 5-pin DIN becomes a fully active keyboard port, allowing you to plug in a vintage keyboard and type at a DOS prompt on the mixer's built-in LCD screen.Populating the Intel 82078 section would allow you to plug in a standard 3.5" floppy drive (or a modern USB floppy emulator like a Gotek / N-Drive) and read standard floppy disks.
 
 
-###More info on freedos or alternative dos embedding types.  
+###More info on freedos or alternative dos embedding types.  (Note Currently the freedos / bios method developed by Chris is likely the simplist means to approach running dos - this datalight conjecture may indeed suffer some of the same addressing issue chris encountered with MSDOS - not sure.  However
+it would be good to know what DOS was used during the development x86 native systems should be fine. It seems Beheringer may have used Borland C++ as its main
+build path. 
+
 Datalight ROM-DOS is an MS-DOS compatible operating system engineered from the ground up specifically for embedded hardware developers. Introduced by Datalight, Inc. in 1989, it gained massive popularity in the industrial computing and original equipment manufacturer (OEM) space because it bypassed the licensing limits of Microsoft and stripped away unnecessary desktop bloat. https://archive.org/details/datalite-rom-dos-5.0
 
 https://archive.org/details/datalite-serial-protocol-dx-3200_6

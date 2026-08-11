@@ -838,6 +838,10 @@ Track the knob's state internally (maintain a value per knob)
 
 Interpret relative encoder messages (increment/decrement)
 
+the sysex the encoders send is all over the place only like 1 knob is fully usable  however all hte knobs if given custom code would be technically capable of acting as a rotary encoder with a toggle button added in, I think they can actually each be used as two controls via the toggle.  so a rewrite of the firmware would likely unlock the use of the lcd encoders as midi knobs to link with plugins etc.. 
+
+
+
 Apply the changes to the focused plugin parameter
 
 
